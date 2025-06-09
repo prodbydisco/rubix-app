@@ -237,9 +237,15 @@ function addFaceLabels() {
   addCubeLabel(facePivots.right, "RIGHT");
 };
 
-
+const ROTATION_DURATION = 0.2; // duration in seconds for rotation
+let isRotating = false; // flag to prevent multiple rotations
 
 function rotateFace(face, direction) {
+  // prevent new rotation if one is in progress
+  if (isRotating) {
+    return;
+  }
+
   console.log(`Attempting to rotate ${face} face ${direction}`);
   
   const faceCubelets = identifyFaceCubelets()[face];
@@ -249,6 +255,8 @@ function rotateFace(face, direction) {
     console.error(`No cubelets found for ${face} face!`);
     return;
   }
+  
+  isRotating = true; // set rotation lock
   
   const pivot = facePivots[face];
   const angle = direction === 'clockwise' ? -Math.PI / 2 : Math.PI / 2;
@@ -277,56 +285,72 @@ function rotateFace(face, direction) {
     cubelet.quaternion.premultiply(pivot.getWorldQuaternion(new THREE.Quaternion()).invert());
   });
   
-  // set rotation based on face
+  // rotate face with GSAP animation
+  let rotationAxis;
+  let targetRotation;
+  
   switch(face) {
     case 'front':
-      pivot.rotation.z = angle;
+      rotationAxis = 'z';
+      targetRotation = angle;
       break;
     case 'back':
-      pivot.rotation.z = angle;
+      rotationAxis = 'z';
+      targetRotation = angle;
       break;
     case 'up':
-      pivot.rotation.y = angle;
+      rotationAxis = 'y';
+      targetRotation = angle;
       break;
     case 'down':
-      pivot.rotation.y = -angle;
+      rotationAxis = 'y';
+      targetRotation = -angle;
       break;
     case 'left':
-      pivot.rotation.x = -angle;
+      rotationAxis = 'x';
+      targetRotation = -angle;
       break;
     case 'right':
-      pivot.rotation.x = angle;
+      rotationAxis = 'x';
+      targetRotation = angle;
       break;
   }
 
-  // detach cubelets after animation
-  setTimeout(() => {
-    faceCubelets.forEach(cubelet => {
-      // store world position and rotation
-      const worldQuat = new THREE.Quaternion();
-      cubelet.getWorldPosition(worldPosition);
-      cubelet.getWorldQuaternion(worldQuat);
+  // animate the rotation using GSAP
+  gsap.to(pivot.rotation, {
+    [rotationAxis]: targetRotation,
+    duration: ROTATION_DURATION,
+    ease: "power2.inOut",
+    onComplete: () => {
+      // detach cubelets after animation
+      faceCubelets.forEach(cubelet => {
+        // store world position and rotation
+        const worldQuat = new THREE.Quaternion();
+        cubelet.getWorldPosition(worldPosition);
+        cubelet.getWorldQuaternion(worldQuat);
+        
+        // detach from pivot
+        pivot.remove(cubelet);
+        
+        // add back to scene
+        cube.add(cubelet);
+        scene.add(cubelet);
+        
+        // convert world position to local position relative to root
+        const localPosition = worldPosition.clone();
+        localPosition.sub(cube.getWorldPosition(new THREE.Vector3()));
+        localPosition.applyQuaternion(cube.getWorldQuaternion(new THREE.Quaternion()).invert());
+        
+        // set final local position and rotation
+        cubelet.position.copy(localPosition);
+        cubelet.quaternion.copy(worldQuat);
+      });
       
-      // detach from pivot
-      pivot.remove(cubelet);
-      
-      // add back to scene
-      cube.add(cubelet);
-      scene.add(cubelet);
-      
-      // convert world position to local position relative to root
-      const localPosition = worldPosition.clone();
-      localPosition.sub(cube.getWorldPosition(new THREE.Vector3()));
-      localPosition.applyQuaternion(cube.getWorldQuaternion(new THREE.Quaternion()).invert());
-      
-      // set final local position and rotation
-      cubelet.position.copy(localPosition);
-      cubelet.quaternion.copy(worldQuat);
-    });
-    
-    // reset pivot rotation
-    pivot.rotation.set(0, 0, 0);
-  }, 500);
+      // reset pivot rotation
+      pivot.rotation.set(0, 0, 0);
+      isRotating = false; // release rotation lock
+    }
+  });
 }
 
 // keyboard controls
@@ -402,7 +426,6 @@ function identifyFaceCubelets() {
 
   return faceCubelets;
 }
-
 
 
 window.addEventListener('resize', () => {
