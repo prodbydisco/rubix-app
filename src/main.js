@@ -1,11 +1,14 @@
 import * as THREE from '/node_modules/three/build/three.module.js';
 import { OrbitControls } from '/node_modules/three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from '/node_modules/three/examples/jsm/loaders/GLTFLoader.js';
-import { FontLoader } from '/node_modules/three/examples/jsm/loaders/FontLoader.js';
-import { TextGeometry } from '/node_modules/three/examples/jsm/geometries/TextGeometry.js';
+import { GUI } from '/node_modules/dat.gui/build/dat.gui.module.js';
 
 const scene = new THREE.Scene(); // create scene
 scene.background = new THREE.Color(0x000000); // set scene background
+
+// Add axis helper to visualize world coordinates
+// const axesHelper = new THREE.AxesHelper(5);
+// scene.add(axesHelper);
 
 const camera = new THREE.PerspectiveCamera(50, window.innerWidth/window.innerHeight, 0.1, 1000); // create camera
 camera.position.set(5, 5, 5); // set cam position
@@ -51,6 +54,8 @@ keyLight.shadow.camera.far = 500;
 
 let root;
 const worldPosition = new THREE.Vector3();
+const worldQuat = new THREE.Quaternion();
+const cubePivot = new THREE.Object3D();
 const cubelets = []; // array for each of the 27 cubes
 let cube; // declare cube in global scope
 
@@ -74,39 +79,33 @@ const facePivots = {
 };
 
 
-
 // load and configure the cube
 const loader = new GLTFLoader();
 loader.load('/models/rubiks_cube.glb', gltf => {
   root = gltf.scene;
   cube = root.getObjectByName('Cube');
-  
-  root.scale.set(2, 2, 2);
-  scene.add(root);
 
-  centerPieces.front = root.getObjectByName('center_y');
-  centerPieces.back = root.getObjectByName('center_w');
-  centerPieces.up = root.getObjectByName('center_r');
-  centerPieces.down = root.getObjectByName('center_o');
-  centerPieces.left = root.getObjectByName('center_g');
-  centerPieces.right = root.getObjectByName('center_b');
-
+  scene.add(cubePivot); // parent for rotating entire cube
+  cubePivot.position.set(0,0,0); // set to center
   
-  // add individual cubes to cubelets array
+  // First collect all cubelets
   const addCubes = (object) => {
-
     object.children.forEach(collection => {
       collection.children.forEach(child => {
         if (child.name !== 'square') {
           cubelets.push(child);
-        }});
-      }
-    );
-
+        }
+      });
+    });
     cubelets.sort();
   };
   addCubes(cube);
+
+  // Now add to scene
+  root.scale.set(2, 2, 2);
+  scene.add(root);
   
+  getCenterPieces();
   positionFacePivots();
   addFaceLabels();
 },
@@ -117,6 +116,35 @@ function (error) {
     console.error('An error happened:', error);
 });
 
+
+// Get center pieces based on positions values
+function getCenterPieces() {
+  const tempWorldPos = new THREE.Vector3();
+  
+  cubelets.forEach(cubelet => {
+    cubelet.getWorldPosition(tempWorldPos);
+    // Find which face this cubelet belongs to based on its position after rotation
+    if (Math.abs(tempWorldPos.x) < 0.1 && Math.abs(tempWorldPos.y) < 0.1 && tempWorldPos.z > 0) {
+      centerPieces.front = cubelet;
+      console.log('Front face cubelet:', cubelet.name);
+    } else if (Math.abs(tempWorldPos.x) < 0.1 && Math.abs(tempWorldPos.y) < 0.1 && tempWorldPos.z < 0) {
+      centerPieces.back = cubelet;
+      console.log('Back face cubelet:', cubelet.name);
+    } else if (Math.abs(tempWorldPos.x) < 0.1 && tempWorldPos.y > 0 && Math.abs(tempWorldPos.z) < 0.1) {
+      centerPieces.up = cubelet;
+      console.log('Up face cubelet:', cubelet.name);
+    } else if (Math.abs(tempWorldPos.x) < 0.1 && tempWorldPos.y < 0 && Math.abs(tempWorldPos.z) < 0.1) {
+      centerPieces.down = cubelet;
+      console.log('Down face cubelet:', cubelet.name);
+    } else if (tempWorldPos.x < 0 && Math.abs(tempWorldPos.y) < 0.1 && Math.abs(tempWorldPos.z) < 0.1) {
+      centerPieces.left = cubelet;
+      console.log('Left face cubelet:', cubelet.name);
+    } else if (tempWorldPos.x > 0 && Math.abs(tempWorldPos.y) < 0.1 && Math.abs(tempWorldPos.z) < 0.1) {
+      centerPieces.right = cubelet;
+      console.log('Right face cubelet:', cubelet.name);
+    }
+  });
+};
 
 
 // initialize face pivots
@@ -132,7 +160,7 @@ function positionFacePivots() {
   
   // back face (z = -1)
   facePivots.back.position.set(0, 0, -1);
-  facePivots.back.rotation.set(0, Math.PI, 0);
+  facePivots.back.rotation.set(0, 0, 0);
   
   // up face (y = 1)
   facePivots.up.position.set(0, 1, 0);
@@ -151,8 +179,19 @@ function positionFacePivots() {
   facePivots.right.rotation.set(0, 0, 0);
 }
 
+// function logCubeProperties() {
+//   cubelets.forEach(cubelet => {
+//     const cubeWorldPos = cubelet.getWorldPosition(worldPosition);
+//     console.log({
+//       name: cubelet.name,
+//       position: cubeWorldPos,
+//       rotation: cube.rotation,
+//       quat: cube.getWorldQuaternion(worldQuat)
+//   })})
+// };
 
-// add labels to each cube face
+
+
 function addCubeLabel(face, text) {
   // create canvas for text
   const canvas = document.createElement('canvas');
@@ -237,10 +276,82 @@ function addFaceLabels() {
   addCubeLabel(facePivots.right, "RIGHT");
 };
 
+
+
+function rotateCube(pivot, axis) {
+  if (isRotating) { return } else { isRotating = true };
+
+  cubelets.forEach(cubelet => {
+    // get world positions & rotations of each cube
+    cubelet.getWorldPosition(worldPosition);
+    cubelet.getWorldQuaternion(worldQuat);
+    
+    // detach from current parent
+    if (cubelet.parent) {
+      cubelet.parent.remove(cubelet);
+    }
+    pivot.add(cubelet); // attach all cubelets to the pivot
+    
+    // convert world position to local position relative to pivot
+    cubelet.position.copy(worldPosition);
+    cubelet.position.sub(pivot.getWorldPosition(new THREE.Vector3()));
+    cubelet.position.applyQuaternion(pivot.getWorldQuaternion(new THREE.Quaternion()).invert());
+    
+    // convert world rotation to local rotation
+    cubelet.quaternion.copy(worldQuat);
+    cubelet.quaternion.premultiply(pivot.getWorldQuaternion(new THREE.Quaternion()).invert());
+  });
+
+  // rotate the axis
+  switch(axis) {
+    case 'x': pivot.rotation.x = Math.PI / 2; break;
+    case 'y': pivot.rotation.y = Math.PI / 2; break;
+    case '-x': pivot.rotation.x = -Math.PI / 2; break;
+    case '-y': pivot.rotation.y = -Math.PI / 2; break;
+  }
+
+  // detach cubelets after animation
+  cubelets.forEach(cubelet => {
+    // store world position and rotation
+    cubelet.getWorldPosition(worldPosition);
+    cubelet.getWorldQuaternion(worldQuat);
+    
+    // detach from pivot
+    pivot.remove(cubelet);
+    
+    // add back to cube and scene
+    cube.add(cubelet);
+    scene.add(cubelet);
+    
+    // convert world position to local position relative to scene
+    const cubeWorldPos = new THREE.Vector3();
+    const cubeWorldQuat = new THREE.Quaternion();
+    scene.getWorldPosition(cubeWorldPos);
+    scene.getWorldQuaternion(cubeWorldQuat);
+    
+    // Set position relative to scene
+    cubelet.position.copy(worldPosition);
+    cubelet.position.sub(cubeWorldPos);
+    cubelet.position.applyQuaternion(cubeWorldQuat.invert());
+    
+    // Set rotation relative to scene
+    cubelet.quaternion.copy(worldQuat);
+    cubelet.quaternion.premultiply(cubeWorldQuat.invert());
+  })
+
+  // reset rotation of parent axis
+  pivot.rotation.set(0,0,0);
+  
+  isRotating = false; // release rotation lock
+};
+
+
+
 const ROTATION_DURATION = 0.2; // duration in seconds for rotation
 let isRotating = false; // flag to prevent multiple rotations
 
 function rotateFace(face, direction) {
+  getCenterPieces();
   // prevent new rotation if one is in progress
   if (isRotating) {
     return;
@@ -264,9 +375,7 @@ function rotateFace(face, direction) {
   // attach all cubelets to the pivot
   faceCubelets.forEach(cubelet => {
     // store world position and rotation
-    const worldPos = new THREE.Vector3();
-    const worldQuat = new THREE.Quaternion();
-    cubelet.getWorldPosition(worldPos);
+    cubelet.getWorldPosition(worldPosition);
     cubelet.getWorldQuaternion(worldQuat);
     
     // detach from current parent
@@ -276,7 +385,7 @@ function rotateFace(face, direction) {
     pivot.add(cubelet);
     
     // convert world position to local position relative to pivot
-    cubelet.position.copy(worldPos);
+    cubelet.position.copy(worldPosition);
     cubelet.position.sub(pivot.getWorldPosition(new THREE.Vector3()));
     cubelet.position.applyQuaternion(pivot.getWorldQuaternion(new THREE.Quaternion()).invert());
     
@@ -296,7 +405,7 @@ function rotateFace(face, direction) {
       break;
     case 'back':
       rotationAxis = 'z';
-      targetRotation = angle;
+      targetRotation = -angle;
       break;
     case 'up':
       rotationAxis = 'y';
@@ -325,25 +434,30 @@ function rotateFace(face, direction) {
       // detach cubelets after animation
       faceCubelets.forEach(cubelet => {
         // store world position and rotation
-        const worldQuat = new THREE.Quaternion();
         cubelet.getWorldPosition(worldPosition);
         cubelet.getWorldQuaternion(worldQuat);
         
         // detach from pivot
         pivot.remove(cubelet);
         
-        // add back to scene
+        // add back to cube and scene
         cube.add(cubelet);
         scene.add(cubelet);
         
-        // convert world position to local position relative to root
-        const localPosition = worldPosition.clone();
-        localPosition.sub(cube.getWorldPosition(new THREE.Vector3()));
-        localPosition.applyQuaternion(cube.getWorldQuaternion(new THREE.Quaternion()).invert());
+        // convert world position to local position relative to scene
+        const cubeWorldPos = new THREE.Vector3();
+        const cubeWorldQuat = new THREE.Quaternion();
+        scene.getWorldPosition(cubeWorldPos);
+        scene.getWorldQuaternion(cubeWorldQuat);
         
-        // set final local position and rotation
-        cubelet.position.copy(localPosition);
+        // Set position relative to scene
+        cubelet.position.copy(worldPosition);
+        cubelet.position.sub(cubeWorldPos);
+        cubelet.position.applyQuaternion(cubeWorldQuat.invert());
+        
+        // Set rotation relative to scene
         cubelet.quaternion.copy(worldQuat);
+        cubelet.quaternion.premultiply(cubeWorldQuat.invert());
       });
       
       // reset pivot rotation
@@ -356,6 +470,8 @@ function rotateFace(face, direction) {
 // keyboard controls
 window.addEventListener('keydown', (event) => {
   console.log(`Key pressed: ${event.key}`);
+  if (event.key !== 'F12') {event.preventDefault()};
+
   switch(event.key) {
     case 'f': rotateFace('front', 'clockwise'); break;
     case 'F': rotateFace('front', 'counterclockwise'); break;
@@ -369,6 +485,11 @@ window.addEventListener('keydown', (event) => {
     case 'L': rotateFace('left', 'counterclockwise'); break;
     case 'r': rotateFace('right', 'clockwise'); break;
     case 'R': rotateFace('right', 'counterclockwise'); break;
+    
+    case 'ArrowRight': rotateCube(cubePivot, 'y'); break;
+    case 'ArrowLeft': rotateCube(cubePivot, '-y'); break;
+    case 'ArrowUp': rotateCube(cubePivot, '-x'); break;
+    case 'ArrowDown': rotateCube(cubePivot, 'x'); break;
   }
 });
 
@@ -426,6 +547,22 @@ function identifyFaceCubelets() {
 
   return faceCubelets;
 }
+
+
+
+// GUI controls
+const gui = new GUI();
+
+const baseFaceRotation = {
+  white: [],
+  yellow: 0,
+  orange: [],
+  red: [],
+  blue: ['y', -Math.PI / 2],
+  green: ['y', Math.PI / 2],
+};
+
+// gui.add(baseFaceRotation);
 
 
 window.addEventListener('resize', () => {
