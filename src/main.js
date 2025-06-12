@@ -126,22 +126,16 @@ function getCenterPieces() {
     // Find which face this cubelet belongs to based on its position after rotation
     if (Math.abs(tempWorldPos.x) < 0.1 && Math.abs(tempWorldPos.y) < 0.1 && tempWorldPos.z > 0) {
       centerPieces.front = cubelet;
-      console.log('Front face cubelet:', cubelet.name);
     } else if (Math.abs(tempWorldPos.x) < 0.1 && Math.abs(tempWorldPos.y) < 0.1 && tempWorldPos.z < 0) {
       centerPieces.back = cubelet;
-      console.log('Back face cubelet:', cubelet.name);
     } else if (Math.abs(tempWorldPos.x) < 0.1 && tempWorldPos.y > 0 && Math.abs(tempWorldPos.z) < 0.1) {
       centerPieces.up = cubelet;
-      console.log('Up face cubelet:', cubelet.name);
     } else if (Math.abs(tempWorldPos.x) < 0.1 && tempWorldPos.y < 0 && Math.abs(tempWorldPos.z) < 0.1) {
       centerPieces.down = cubelet;
-      console.log('Down face cubelet:', cubelet.name);
     } else if (tempWorldPos.x < 0 && Math.abs(tempWorldPos.y) < 0.1 && Math.abs(tempWorldPos.z) < 0.1) {
       centerPieces.left = cubelet;
-      console.log('Left face cubelet:', cubelet.name);
     } else if (tempWorldPos.x > 0 && Math.abs(tempWorldPos.y) < 0.1 && Math.abs(tempWorldPos.z) < 0.1) {
       centerPieces.right = cubelet;
-      console.log('Right face cubelet:', cubelet.name);
     }
   });
 };
@@ -347,30 +341,28 @@ function rotateCube(pivot, axis) {
 
 
 
-const ROTATION_DURATION = 0.2; // duration in seconds for rotation
+let rotationDuration = 0.2; // duration in seconds for rotation
 let isRotating = false; // flag to prevent multiple rotations
 
-function rotateFace(face, direction) {
+function rotateFace(face, direction, multiplier) {
   getCenterPieces();
   // prevent new rotation if one is in progress
   if (isRotating) {
-    return;
+    return Promise.reject(new Error('Rotation in progress'));
   }
 
-  console.log(`Attempting to rotate ${face} face ${direction}`);
-  
   const faceCubelets = identifyFaceCubelets()[face];
-  console.log(`Found ${faceCubelets.length} cubelets for ${face} face`);
-  
   if (faceCubelets.length === 0) {
     console.error(`No cubelets found for ${face} face!`);
-    return;
+    return Promise.reject(new Error('No cubelets found'));
   }
   
   isRotating = true; // set rotation lock
   
   const pivot = facePivots[face];
-  const angle = direction === 'clockwise' ? -Math.PI / 2 : Math.PI / 2;
+  // Fix angle calculation to properly handle multiplier
+  const baseAngle = Math.PI / 2; // 90 degrees
+  const angle = direction === 'clockwise' ? -baseAngle * multiplier : baseAngle * multiplier;
   
   // attach all cubelets to the pivot
   faceCubelets.forEach(cubelet => {
@@ -425,45 +417,48 @@ function rotateFace(face, direction) {
       break;
   }
 
-  // animate the rotation using GSAP
-  gsap.to(pivot.rotation, {
-    [rotationAxis]: targetRotation,
-    duration: ROTATION_DURATION,
-    ease: "power2.inOut",
-    onComplete: () => {
-      // detach cubelets after animation
-      faceCubelets.forEach(cubelet => {
-        // store world position and rotation
-        cubelet.getWorldPosition(worldPosition);
-        cubelet.getWorldQuaternion(worldQuat);
+  // Return a promise that resolves when the GSAP animation is complete
+  return new Promise((resolve) => {
+    gsap.to(pivot.rotation, {
+      [rotationAxis]: targetRotation,
+      duration: rotationDuration, // Adjust duration based on multiplier
+      ease: "power2.inOut",
+      onComplete: () => {
+        // detach cubelets after animation
+        faceCubelets.forEach(cubelet => {
+          // store world position and rotation
+          cubelet.getWorldPosition(worldPosition);
+          cubelet.getWorldQuaternion(worldQuat);
+          
+          // detach from pivot
+          pivot.remove(cubelet);
+          
+          // add back to cube and scene
+          cube.add(cubelet);
+          scene.add(cubelet);
+          
+          // convert world position to local position relative to scene
+          const cubeWorldPos = new THREE.Vector3();
+          const cubeWorldQuat = new THREE.Quaternion();
+          scene.getWorldPosition(cubeWorldPos);
+          scene.getWorldQuaternion(cubeWorldQuat);
+          
+          // Set position relative to scene
+          cubelet.position.copy(worldPosition);
+          cubelet.position.sub(cubeWorldPos);
+          cubelet.position.applyQuaternion(cubeWorldQuat.invert());
+          
+          // Set rotation relative to scene
+          cubelet.quaternion.copy(worldQuat);
+          cubelet.quaternion.premultiply(cubeWorldQuat.invert());
+        });
         
-        // detach from pivot
-        pivot.remove(cubelet);
-        
-        // add back to cube and scene
-        cube.add(cubelet);
-        scene.add(cubelet);
-        
-        // convert world position to local position relative to scene
-        const cubeWorldPos = new THREE.Vector3();
-        const cubeWorldQuat = new THREE.Quaternion();
-        scene.getWorldPosition(cubeWorldPos);
-        scene.getWorldQuaternion(cubeWorldQuat);
-        
-        // Set position relative to scene
-        cubelet.position.copy(worldPosition);
-        cubelet.position.sub(cubeWorldPos);
-        cubelet.position.applyQuaternion(cubeWorldQuat.invert());
-        
-        // Set rotation relative to scene
-        cubelet.quaternion.copy(worldQuat);
-        cubelet.quaternion.premultiply(cubeWorldQuat.invert());
-      });
-      
-      // reset pivot rotation
-      pivot.rotation.set(0, 0, 0);
-      isRotating = false; // release rotation lock
-    }
+        // reset pivot rotation
+        pivot.rotation.set(0, 0, 0);
+        isRotating = false; // release rotation lock
+        resolve();
+      }
+    });
   });
 }
 
@@ -473,18 +468,18 @@ window.addEventListener('keydown', (event) => {
   if (event.key !== 'F12') {event.preventDefault()};
 
   switch(event.key) {
-    case 'f': rotateFace('front', 'clockwise'); break;
-    case 'F': rotateFace('front', 'counterclockwise'); break;
-    case 'b': rotateFace('back', 'clockwise'); break;
-    case 'B': rotateFace('back', 'counterclockwise'); break;
-    case 'u': rotateFace('up', 'clockwise'); break;
-    case 'U': rotateFace('up', 'counterclockwise'); break;
-    case 'd': rotateFace('down', 'clockwise'); break;
-    case 'D': rotateFace('down', 'counterclockwise'); break;
-    case 'l': rotateFace('left', 'clockwise'); break;
-    case 'L': rotateFace('left', 'counterclockwise'); break;
-    case 'r': rotateFace('right', 'clockwise'); break;
-    case 'R': rotateFace('right', 'counterclockwise'); break;
+    case 'f': rotateFace('front', 'clockwise', 1); break;
+    case 'F': rotateFace('front', 'counterclockwise', 1); break;
+    case 'b': rotateFace('back', 'clockwise', 1); break;
+    case 'B': rotateFace('back', 'counterclockwise', 1); break;
+    case 'u': rotateFace('up', 'clockwise', 1); break;
+    case 'U': rotateFace('up', 'counterclockwise', 1); break;
+    case 'd': rotateFace('down', 'clockwise', 1); break;
+    case 'D': rotateFace('down', 'counterclockwise', 1); break;
+    case 'l': rotateFace('left', 'clockwise', 1); break;
+    case 'L': rotateFace('left', 'counterclockwise', 1); break;
+    case 'r': rotateFace('right', 'clockwise', 1); break;
+    case 'R': rotateFace('right', 'counterclockwise', 1); break;
     
     case 'ArrowRight': rotateCube(cubePivot, 'y'); break;
     case 'ArrowLeft': rotateCube(cubePivot, '-y'); break;
@@ -550,19 +545,364 @@ function identifyFaceCubelets() {
 
 
 
-// GUI controls
-const gui = new GUI();
+const dropdownContent = document.querySelector('.dropdown-content');
+const dropbtn = document.querySelector('.dropbtn');
+const shuffleButton = document.getElementById('shuffle');
+const resetButton = document.getElementById('reset');
 
-const baseFaceRotation = {
-  white: [],
-  yellow: 0,
-  orange: [],
-  red: [],
-  blue: ['y', -Math.PI / 2],
-  green: ['y', Math.PI / 2],
-};
+const solveButton = document.getElementById('solve-button');
+const algorithmPlaceholder = document.getElementById('algorithm');
 
-// gui.add(baseFaceRotation);
+
+let lastAlgorithm = [];
+let isResetting = false;
+
+const algortihms = {
+  OLL: {
+    'Dot': {
+      icon: '/images/oll/dot.png',
+      algorithm: "F R U R' U' F' f R U R' U' f'"
+    },
+
+    'Horizontal': {
+      icon: '/images/oll/horizontal.png',
+      algorithm: "F R U R' U' F'"
+    },
+
+    'L-shape': {
+      icon: '/images/oll/l-shape.png',
+      algorithm: "f R U R' U' f'"
+    },
+
+    'Antisune': {
+      icon: '/images/oll/antisune.png',
+      algorithm: "R U2 R' U' R U' R'"
+    },
+
+    'Cross-opposite': {
+      icon: '/images/oll/cross-opposite.png',
+      algorithm: "R U R' U R U' R' U R U2 R'"
+    },
+
+    'L-corners': {
+      icon: '/images/oll/l-corners.png',
+      algorithm: "F R' F' r U R U' r'"
+    },
+
+    'Cross-adjacent': {
+      icon: '/images/oll/cross-adjacent.png',
+      algorithm: "R U2 R2 U' R2 U' R2 U2 R"
+    },
+
+    'Sune': {
+      icon: '/images/oll/sune.png',
+      algorithm: "R U R' U R U2 R'"
+    },
+
+    'T-side': {
+      icon: '/images/oll/t-side.png',
+      algorithm: "r U R' U' r' F R F'"
+    },
+
+    'T-front': {
+      icon: '/images/oll/t-front.png',
+      algorithm: "R2 D R' U2 R D' R' U2 R'"
+    },
+  },
+
+  PLL: {
+    'Diagonal': {
+      icon: '/images/pll/diagonal.png',
+      algorithm: "F R U' R' U' R U R' F' R U R' U' R' F R F'"
+    },
+
+    'Headlights': {
+      icon: '/images/pll/headlights.png',
+      algorithm: "R U R' U' R' F R2 U' R' U' R U R' F'"
+    },
+
+    'PLL-H': {
+      icon: '/images/pll/pll-h.png',
+      algorithm: "M2 U M2 U2 M2 U M2"
+    },
+
+    'PLL-Ua': {
+      icon: '/images/pll/pll-ua.png',
+      algorithm: "R U' R U R U R U' R' U' R2"
+    },
+
+    'PLL-Ub': {
+      icon: '/images/pll/pll-ub.png',
+      algorithm: "R2 U R U R' U' R' U' R' U R'"
+    },
+
+    'PLL-Z': {
+      icon: '/images/pll/pll-z.png',
+      algorithm: "M' U M2 U M2 U M' U2 M2"
+    },
+  }
+}
+
+
+// Iterate over each algorithm category (F2L, OLL, PLL)
+Object.entries(algortihms).forEach(([category, algorithms]) => {
+  const dropdownGroup = document.createElement('div');
+  const groupTitle = document.createElement('p');
+  
+  groupTitle.classList.add('group-title');
+  groupTitle.textContent = category;
+  dropdownGroup.appendChild(groupTitle);
+  
+  dropdownGroup.classList.add('dropdown-group');
+  dropdownContent.appendChild(dropdownGroup);
+  
+  // Iterate over each algorithm in the category
+  Object.entries(algorithms).forEach(([id, data]) => {
+    // create container
+    const dropdownPair = document.createElement('div');
+    dropdownPair.classList.add('dropdown-pair');
+    
+    dropdownPair.addEventListener('click', () => {
+      algorithmPlaceholder.textContent = data.algorithm;
+      executeReverse(data.algorithm, 0.5);
+      
+      solveButton.classList.remove('disabled');
+      solveButton.classList.add('enabled');
+      
+      // Hide the dropdown content
+      dropdownContent.classList.add('hidden');
+    });
+    
+    dropdownGroup.appendChild(dropdownPair);
+    
+    // add icon
+    const algorithmIcon = document.createElement('img');
+    algorithmIcon.classList.add('algorithm-icon');
+    algorithmIcon.src = data.icon;
+    dropdownPair.appendChild(algorithmIcon);
+    
+    // add moves
+    const algorithmMoves = document.createElement('p');
+    algorithmMoves.textContent = data.algorithm;
+    dropdownPair.appendChild(algorithmMoves);
+  });
+});
+
+
+async function executeAlgorithm(algorithm, animationDuration) {
+  console.log(`Executing algorithm: ${algorithm}`);
+  const algorithmArray = algorithm.split(' ');
+  
+  const tempDuration = rotationDuration;
+  rotationDuration = animationDuration;
+  
+  // Execute moves sequentially
+  async function executeMoves() {
+    for (const notation of algorithmArray) {
+      // Check if reset was requested
+      if (isResetting) {
+        console.log('Reset requested, stopping algorithm execution');
+        return;
+      }
+
+      console.log('executing: ', notation);
+
+      try {
+        switch(notation) {
+          case "U": await rotateFace('up', 'clockwise', 1); break;
+          case "U2": await rotateFace('up', 'clockwise', 2); break;
+          case "U'": await rotateFace('up', 'counterclockwise', 1); break;
+
+          case "D": await rotateFace('down', 'clockwise', 1); break;
+          case "D2": await rotateFace('down', 'clockwise', 2); break;
+          case "D'": await rotateFace('down', 'counterclockwise', 1); break;
+
+          case "F": await rotateFace('front', 'clockwise', 1); break;
+          case "F2": await rotateFace('front', 'clockwise', 2); break;
+          case "F'": await rotateFace('front', 'counterclockwise', 1); break;
+
+          case "B": await rotateFace('back', 'clockwise', 1); break;
+          case "B2": await rotateFace('back', 'clockwise', 2); break;
+          case "B'": await rotateFace('back', 'counterclockwise', 1); break;
+
+          case "L": await rotateFace('left', 'clockwise', 1); break;
+          case "L2": await rotateFace('left', 'clockwise', 2); break;
+          case "L'": await rotateFace('left', 'counterclockwise', 1); break;
+
+          case "R": await rotateFace('right', 'clockwise', 1); break;
+          case "R2": await rotateFace('right', 'clockwise', 2); break;
+          case "R'": await rotateFace('right', 'counterclockwise', 1); break;
+
+          case "": await rotateCube(); break;
+        }
+      } catch (error) {
+        console.error(`Error executing move ${notation}:`, error);
+        // Wait a bit before trying the next move if there was an error
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+    }
+  }
+
+  await executeMoves();
+  if (!isResetting) {  // Only update lastAlgorithm if we're not resetting
+    lastAlgorithm = algorithm;
+  }
+  rotationDuration = tempDuration;
+}
+
+async function executeReverse(algorithm, animationDuration) {
+  const inverseAlgorithm = algorithm.split(' ').reverse().map(move => {
+    // Handle double moves specially
+    if (move.includes("2")) {
+      // Double moves are their own inverse, so just return them as is
+      return move;
+    }
+    // For regular moves, if the move has a prime (') remove it, otherwise add it
+    return move.includes("'") ? move.replace("'", "") : move + "'";
+  });
+
+  return executeAlgorithm(inverseAlgorithm.join(' '), animationDuration);
+}
+
+async function solve() {
+  console.log(lastAlgorithm.length);
+  if (lastAlgorithm.length === 0) return;
+
+  await executeReverse(lastAlgorithm, 0.35);  // Now we wait for the algorithm to finish
+  
+  lastAlgorithm = [];  // This will only execute after the algorithm is complete
+  solveButton.classList.remove('enabled');
+  solveButton.classList.add('disabled');
+}
+solveButton.addEventListener('click', () => solve().catch(console.error));
+
+
+async function resetCube() {
+  // Set reset flag
+  isResetting = true;
+
+  // If a rotation is in progress, wait for it to complete
+  if (isRotating) {
+    // Wait for current rotation to finish
+    await new Promise(resolve => setTimeout(resolve, rotationDuration * 1000));
+  }
+
+  // Cancel any ongoing GSAP animations
+  gsap.killTweensOf(Object.values(facePivots));
+  gsap.killTweensOf(cubePivot);
+
+  // Remove existing cube from scene
+  if (root) {
+    // First remove all cubelets from their current parents
+    cubelets.forEach(cubelet => {
+      if (cubelet.parent) {
+        cubelet.parent.remove(cubelet);
+      }
+    });
+    scene.remove(root);
+  }
+  
+  // Clear existing cubelets array
+  cubelets.length = 0;
+  
+  // Reset center pieces
+  Object.keys(centerPieces).forEach(key => {
+    centerPieces[key] = null;
+  });
+
+  // Reset face pivots
+  Object.values(facePivots).forEach(pivot => {
+    pivot.rotation.set(0, 0, 0);
+    // Remove all children from pivot
+    while(pivot.children.length > 0) {
+      pivot.remove(pivot.children[0]);
+    }
+    scene.remove(pivot);
+  });
+  
+  // Reset cube pivot
+  cubePivot.rotation.set(0, 0, 0);
+  // Remove all children from cubePivot
+  while(cubePivot.children.length > 0) {
+    cubePivot.remove(cubePivot.children[0]);
+  }
+  
+  // Clear last algorithm
+  lastAlgorithm = [];
+  
+  // Reset solve button state
+  solveButton.classList.remove('enabled');
+  solveButton.classList.add('disabled');
+  
+  // Clear algorithm placeholder
+  algorithmPlaceholder.textContent = '';
+
+  // Reset rotation flag
+  isRotating = false;
+  
+  // Reload the cube model
+  return new Promise((resolve) => {
+    loader.load('/models/rubiks_cube.glb', gltf => {
+      root = gltf.scene;
+      cube = root.getObjectByName('Cube');
+
+      // Instead of clearing the entire scene, just remove the cube-related objects
+      scene.children.forEach(child => {
+        if (child !== camera && 
+            child !== ambientLight && 
+            child !== keyLight && 
+            child !== fillLight && 
+            child !== rimLight) {
+          scene.remove(child);
+        }
+      });
+
+      scene.add(cubePivot);
+      cubePivot.position.set(0, 0, 0);
+      
+      const addCubes = (object) => {
+        object.children.forEach(collection => {
+          collection.children.forEach(child => {
+            if (child.name !== 'square') {
+              cubelets.push(child);
+            }
+          });
+        });
+        cubelets.sort();
+      };
+      addCubes(cube);
+
+      root.scale.set(2, 2, 2);
+      scene.add(root);
+      
+      // Re-add face pivots to scene
+      Object.values(facePivots).forEach(pivot => {
+        scene.add(pivot);
+      });
+      
+      getCenterPieces();
+      positionFacePivots();
+      addFaceLabels();
+      
+      isResetting = false;  // Reset the flag
+      resolve();
+    });
+  });
+}
+
+// Update keyboard event listener for reset
+resetButton.addEventListener('click', () => resetCube().catch(console.error));
+
+
+dropbtn.addEventListener('mouseenter', () => {
+  dropdownContent.classList.remove('hidden');
+});
+
+
+
+
+
+
 
 
 window.addEventListener('resize', () => {
