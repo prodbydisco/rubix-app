@@ -10,18 +10,20 @@ const resetButton = document.getElementById('reset');
 const solveButton = document.getElementById('solve-button');
 const algorithmPlaceholder = document.getElementById('algorithm');
 
-let root;
 const worldPosition = new THREE.Vector3();
 const worldQuat = new THREE.Quaternion();
-const cubePivot = new THREE.Object3D();
+const cubePivot = new THREE.Object3D(); // pivot axis for entire cube
+
+let root;
+let cube;
 const cubelets = []; // array for each of the 27 cubes
-let cube; // declare cube in global scope
+let lastAlgorithm = [];
+let rotationQueue = [];
+
+let isResetting = false;
+let isProcessingQueue = false;
 let isCubeRotating = false;
 let isFaceRotating = false;
-
-// global variables
-let lastAlgorithm = [];
-let isResetting = false;
 
 const centerPieces = {
   front: null,
@@ -32,7 +34,7 @@ const centerPieces = {
   right: null
 };
 
-// create pivot points for each face
+// pivot points for each face
 const facePivots = {
   front: new THREE.Object3D(),
   back: new THREE.Object3D(),
@@ -128,7 +130,7 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(window.devicePixelRatio);
 
 const controls = new OrbitControls(camera, renderer.domElement); // create orbit/drag controls
-controls.enableDamping = true;
+controls.enableDamping = true; // enables smooth cam movements
 
 
 // add ambient light for base illumination
@@ -167,12 +169,14 @@ const loader = new GLTFLoader();
 loader.load('/models/rubiks_cube.glb', gltf => {
   root = gltf.scene;
   cube = root.getObjectByName('Cube');
+
+  root.scale.set(2, 2, 2);
   
   // set initial cube state for preferred colours
   cube.rotation.x = -Math.PI / 2;
   cube.rotation.z = -Math.PI / 2;
 
-  scene.add(cubePivot); // parent for rotating entire cube
+  scene.add(cubePivot); // add cube axis
   cubePivot.position.set(0,0,0); // set to center
   
   // collect all cubelets
@@ -188,8 +192,7 @@ loader.load('/models/rubiks_cube.glb', gltf => {
   };
   addCubes(cube);
 
-  // add to scene
-  root.scale.set(2, 2, 2);
+  // add cube to scene
   scene.add(root);
   
   getCenterPieces();
@@ -260,18 +263,6 @@ function positionFacePivots() {
   facePivots.right.rotation.set(0, 0, 0);
 }
 
-// function logCubeProperties() {
-//   cubelets.forEach(cubelet => {
-//     const cubeWorldPos = cubelet.getWorldPosition(worldPosition);
-//     console.log({
-//       name: cubelet.name,
-//       position: cubeWorldPos,
-//       rotation: cube.rotation,
-//       quat: cube.getWorldQuaternion(worldQuat)
-//   })})
-// };
-
-
 
 function addCubeLabel(face, text) {
   // create canvas for text
@@ -301,6 +292,7 @@ function addCubeLabel(face, text) {
     side: THREE.DoubleSide
   });
   
+
   // create plane for text
   const plane = new THREE.PlaneGeometry(0.5, 0.25);
   const textMesh = new THREE.Mesh(plane, material);
@@ -348,6 +340,7 @@ function addCubeLabel(face, text) {
   };
 }
 
+
 function addFaceLabels() {
   addCubeLabel(facePivots.front, "FRONT");
   addCubeLabel(facePivots.back, "BACK");
@@ -356,6 +349,7 @@ function addFaceLabels() {
   addCubeLabel(facePivots.left, "LEFT");
   addCubeLabel(facePivots.right, "RIGHT");
 };
+
 
 // handle cubelet transformations
 function transformCubelets(cubelets, pivot, operation = 'attach') {
@@ -409,6 +403,7 @@ function transformCubelets(cubelets, pivot, operation = 'attach') {
   });
 }
 
+
 // get rotation axis and angle for face rotation
 function getFaceRotationParams(face, direction, turns) {
   const baseAngle = Math.PI / 2;
@@ -447,13 +442,10 @@ function getFaceRotationParams(face, direction, turns) {
   return { rotationAxis, targetRotation };
 }
 
-// Add rotation queue at the top with other global variables
-let rotationQueue = [];
-let isProcessingQueue = false;
 
 function rotateCube(axis, turns, rotationDuration, excludeFace = null) {
   return new Promise((resolve, reject) => {
-    // Add rotation to queue
+    // add rotation to queue
     rotationQueue.push({
       type: 'cube',
       params: { axis, turns, rotationDuration, excludeFace },
@@ -461,7 +453,7 @@ function rotateCube(axis, turns, rotationDuration, excludeFace = null) {
       reject
     });
 
-    // Start processing queue if not already processing
+    // start processing queue if not already
     if (!isProcessingQueue) {
       processRotationQueue();
     }
@@ -470,7 +462,7 @@ function rotateCube(axis, turns, rotationDuration, excludeFace = null) {
 
 function rotateFace(face, direction, turns, rotationDuration) {
   return new Promise((resolve, reject) => {
-    // Add rotation to queue
+    // add rotation to queue
     rotationQueue.push({
       type: 'face',
       params: { face, direction, turns, rotationDuration },
@@ -478,7 +470,7 @@ function rotateFace(face, direction, turns, rotationDuration) {
       reject
     });
 
-    // Start processing queue if not already processing
+    // Start processing queue if not already
     if (!isProcessingQueue) {
       processRotationQueue();
     }
@@ -562,11 +554,11 @@ async function processRotationQueue() {
         });
       }
       
-      // Remove completed rotation from queue and resolve its promise
+      // remove completed rotation from queue and resolve its promise
       rotationQueue.shift();
       rotation.resolve();
     } catch (error) {
-      // Remove failed rotation from queue and reject its promise
+      // remove failed rotation from queue and reject its promise
       rotationQueue.shift();
       rotation.reject(error);
     }
@@ -835,7 +827,7 @@ Object.entries(algortihms).forEach(([category, algorithms]) => {
       dropdownContent.classList.add('hidden');
     });
 
-    // Add hover effects for the solve button
+    // add hover effects for the solve button
     algorithmPair.addEventListener('mouseenter', () => {
       solvePairButton.classList.add('hover-underline');
     });
@@ -868,7 +860,7 @@ Object.entries(algortihms).forEach(([category, algorithms]) => {
     solvePairButton.classList.add('block-button');
     solvePairButton.textContent = 'Solve'; 
     
-    // Add hover effects for the solve button
+    // add hover effects for the solve button
     algorithmPair.addEventListener('mouseenter', () => {
       solvePairButton.classList.add('hover-underline');
     });
@@ -877,7 +869,7 @@ Object.entries(algortihms).forEach(([category, algorithms]) => {
       solvePairButton.classList.remove('hover-underline');
     });
 
-    // Remove underline when hovering over setup button
+    // remove underline when hovering over setup button
     setupButton.addEventListener('mouseenter', () => {
       solvePairButton.classList.remove('hover-underline');
     });
@@ -889,7 +881,7 @@ Object.entries(algortihms).forEach(([category, algorithms]) => {
     });
     
     setupButton.addEventListener('click', (event) => {
-      event.stopPropagation(); // Stop event from bubbling up to parent
+      event.stopPropagation(); // stop event from bubbling up to parent
       algorithmPlaceholder.textContent = data.algorithm;
       executeReverse(data.algorithm, 0.2);
       
@@ -900,7 +892,7 @@ Object.entries(algortihms).forEach(([category, algorithms]) => {
     });
     
     solvePairButton.addEventListener('click', (event) => {
-      event.stopPropagation(); // Stop event from bubbling up to parent
+      event.stopPropagation(); // stop event from bubbling up to parent
       algorithmPlaceholder.textContent = data.algorithm;
       executeAlgorithm(data.algorithm, 0.5);
       
