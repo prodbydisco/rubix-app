@@ -1,5 +1,6 @@
 body {
   margin: 0;
+  width: 100vw;
   overflow: hidden;
   background-color: black;
   font-family: "JetBrains Mono", monospace;
@@ -12,7 +13,6 @@ canvas {
   position: absolute;
   width: 100%;
   height: 60px;
-  padding: 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -29,8 +29,10 @@ canvas {
   height: 20px;
 }
 
-/* .header-left {
-} */
+.header-left {
+  width: max-content;
+  height: 100%;
+}
 
 .header-right {
   padding: 0px 16px;
@@ -46,12 +48,17 @@ canvas {
 .dropdown {
   position: relative;
   display: inline-block;
+  height: 100%;
 }
 
 .dropbtn {
   color: white;
   font-weight: bold;
-  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0px 16px;
+  height: 100%;
   cursor: pointer;
 }
 
@@ -61,61 +68,91 @@ canvas {
 
 .dropdown-content {
   display: none;
-  position: absolute;
+  position: fixed;
   overflow: scroll;
-  left: -16px;
-  box-sizing: border-box;
+  left: 0;
+  top: 60px;
   background-color: #e6e6e6;
-  min-width: 160px;
   width: 100vw;
+  max-height: calc(100dvh - 60px);
   padding-bottom: 40px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.1);
+
+  box-sizing: border-box;
   z-index: 100;
+}
+
+.dropdown-content::-webkit-scrollbar {
+  display: none;
 }
 
 .dropdown-content.hidden {
   display: none !important;
 }
 
-.dropdown-group {
+.dropdown-block {
   width: 100%;
   padding: 16px 0;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  justify-content: space-between;
+  box-sizing: border-box;
 }
 
-.dropdown-group > * {
+.dropdown-block > * {
   padding: 0 32px;
 }
 
-.group-title {
+.block-title {
   font-size: 18px;
   font-weight: bolder;
   letter-spacing: 1px;
 }
 
-.dropdown-pair {
+.algorithm-pair {
   color: black;
   width: 100%;
   display: flex;
   align-items: center;
   text-decoration: none;
   cursor: pointer;
+  box-sizing: border-box;
 }
 
-.dropdown-pair:hover {
+.algorithm-pair:hover {
   background-color: #ddd;
 }
 
-.dropdown-pair img {
+.algorithm-pair img {
   width: 36px;
   height: 36px;
+  flex-shrink: 0;
 }
 
-.dropdown-pair p {
+.algorithm-pair p {
   margin-left: 32px;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+
+.block-buttons {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.block-button:hover {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.hover-underline {
+  text-decoration: underline;
+  cursor: pointer;
+} 
 
 .solve-container {
   position: absolute;
