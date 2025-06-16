@@ -117,7 +117,7 @@ const algortihms = {
   },
 
 
-  TEST: { // delete me once all moves added
+  'TEST //': { // delete me once all moves added
     // 'Cube Rotation': {
     //   icon: '/images/test/.png',
     //   algorithm: "x y z"
@@ -273,6 +273,8 @@ function positionFacePivots() {
   facePivots.right.rotation.set(0, 0, 0);
 }
 
+// store face label meshes
+const faceLabels = [];
 
 function addCubeLabel(face, text) {
   // create canvas for text
@@ -302,7 +304,6 @@ function addCubeLabel(face, text) {
     side: THREE.DoubleSide
   });
   
-
   // create plane for text
   const plane = new THREE.PlaneGeometry(0.5, 0.25);
   const textMesh = new THREE.Mesh(plane, material);
@@ -333,6 +334,7 @@ function addCubeLabel(face, text) {
   }
 
   scene.add(textMesh);
+  faceLabels.push(textMesh); // store reference to label mesh
   
   // store reference to camera for billboarding
   const billboardCamera = camera;
@@ -349,7 +351,6 @@ function addCubeLabel(face, text) {
     originalAnimate();
   };
 }
-
 
 function addFaceLabels() {
   addCubeLabel(facePivots.front, "FRONT");
@@ -946,6 +947,8 @@ window.addEventListener('keydown', (event) => {
     case 'ArrowLeft': rotateCube('-y', 1, 0.35); break;
     case 'ArrowUp': rotateCube('-x', 1, 0.35); break;
     case 'ArrowDown': rotateCube('x', 1, 0.35); break;
+    
+    case 'h': toggleFaceLabels(); break; // toggle face labels
   }
 });
 
@@ -1037,9 +1040,7 @@ async function executeMove(notation, rotationDuration) {
   }
 }
 
-// help container functionality
-helpContainer.style.display = 'none'; // initially hide the help container
-
+// click help button to toggle menu, click outside of container to close
 helpButton.addEventListener('click', (event) => {
   event.stopPropagation(); // prevent click from bubbling up
   helpContainer.style.display = helpContainer.style.display === 'none' ? 'flex' : 'none';
@@ -1051,3 +1052,29 @@ document.addEventListener('click', (event) => {
     helpContainer.style.display = 'none';
   }
 });
+
+// toggle face labels visibility
+function toggleFaceLabels() {
+  const isVisible = faceLabels[0]?.visible;
+  const targetOpacity = isVisible ? 0 : 1;
+  
+  faceLabels.forEach(label => {
+    // Set initial state
+    if (!isVisible) {
+      label.visible = true;
+      label.material.opacity = 0;
+    }
+    
+    // Animate opacity
+    gsap.to(label.material, {
+      opacity: targetOpacity,
+      duration: 0.3,
+      ease: "power2.inOut",
+      onComplete: () => {
+        if (targetOpacity === 0) {
+          label.visible = false;
+        }
+      }
+    });
+  });
+}

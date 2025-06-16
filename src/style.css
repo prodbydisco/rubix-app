@@ -82,7 +82,7 @@ canvas {
   top: 60px;
   background-color: #e6e6e6;
   width: 100vw;
-  max-height: calc(100dvh - 60px);
+  height: calc(100dvh - 60px);
   padding-bottom: 40px;
 
   box-sizing: border-box;
@@ -186,7 +186,7 @@ canvas {
 
 .help-container {
   position: absolute;
-  display: flex;
+  display: none;
   gap: 20px;
   flex-direction: column;
   width: 80vw;
