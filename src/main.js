@@ -9,6 +9,8 @@ const shuffleButton = document.getElementById('shuffle');
 const resetButton = document.getElementById('reset');
 const solveButton = document.getElementById('solve-button');
 const algorithmPlaceholder = document.getElementById('algorithm');
+const helpButton = document.getElementById('help');
+const helpContainer = document.querySelector('.help-container');
 
 const worldPosition = new THREE.Vector3();
 const worldQuat = new THREE.Quaternion();
@@ -112,13 +114,21 @@ const algortihms = {
       icon: '/images/pll/pll-z.png',
       algorithm: "M' U M2 U M2 U M' U2 M2"
     },
+  },
+
+
+  TEST: { // delete me once all moves added
+    // 'Cube Rotation': {
+    //   icon: '/images/test/.png',
+    //   algorithm: "x y z"
+    // },
   }
 };
 
 const scene = new THREE.Scene(); // create scene
 scene.background = new THREE.Color(0x000000); // set scene background
 
-// Add axis helper to visualize world coordinates
+// // Add axis helper to visualize world coordinates
 // const axesHelper = new THREE.AxesHelper(5);
 // scene.add(axesHelper);
 
@@ -816,15 +826,17 @@ Object.entries(algortihms).forEach(([category, algorithms]) => {
   dropdownBlock.classList.add('dropdown-block');
   dropdownContent.appendChild(dropdownBlock);
   
+  // populate dropdown with 'algorithms' object
   Object.entries(algorithms).forEach(([id, data]) => {
     const algorithmPair = document.createElement('div');
     algorithmPair.classList.add('algorithm-pair');
     
+    // setup cube using the reverse of the solving algorithm (ready for user to solve)
     algorithmPair.addEventListener('click', () => {
       algorithmPlaceholder.textContent = data.algorithm;
       executeAlgorithm(data.algorithm, 0.5);
       
-      dropdownContent.classList.add('hidden');
+      dropdownContent.classList.add('hidden'); // close menu
     });
 
     // add hover effects for the solve button
@@ -991,7 +1003,7 @@ async function executeMove(notation, rotationDuration) {
     "R2": () => rotateFace('right', 'clockwise', 2, rotationDuration),
     "R'": () => rotateFace('right', 'counterclockwise', 1, rotationDuration),
     
-    // cube rotations
+    // entire cube rotations
     "x": () => rotateCube('-x', 1, rotationDuration),
     "x2": () => rotateCube('x', 2, rotationDuration),
     "x'": () => rotateCube('x', 1, rotationDuration),
@@ -1024,3 +1036,18 @@ async function executeMove(notation, rotationDuration) {
     console.error(`Unknown move notation: ${notation}`);
   }
 }
+
+// help container functionality
+helpContainer.style.display = 'none'; // initially hide the help container
+
+helpButton.addEventListener('click', (event) => {
+  event.stopPropagation(); // prevent click from bubbling up
+  helpContainer.style.display = helpContainer.style.display === 'none' ? 'flex' : 'none';
+});
+
+// close help container when clicking outside
+document.addEventListener('click', (event) => {
+  if (!helpContainer.contains(event.target) && event.target !== helpButton) {
+    helpContainer.style.display = 'none';
+  }
+});
