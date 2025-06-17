@@ -47,7 +47,7 @@ const facePivots = {
 };
 
 const algortihms = {
-  OLL: {
+  'Orient Last Layer (OLL)': {
     'Dot': {
       icon: '/images/oll/dot.png',
       algorithm: "F R U R' U' F' f R U R' U' f'"
@@ -89,7 +89,240 @@ const algortihms = {
       algorithm: "R2 D R' U2 R D' R' U2 R'"
     },
   },
-  PLL: {
+
+  'Advanced OLL': {
+    '29': {
+      icon: '/images/oll/advanced/29.png',
+      algorithm: "R U R' U' R U' R' F' U' F R U R'"
+    },
+    '30': {
+      icon: '/images/oll/advanced/30.png',
+      algorithm: "F R' F R2 U' R' U' R U R' F2"
+    },
+    '41': {
+      icon: '/images/oll/advanced/41.png',
+      algorithm: "R U R' U R U2 R' F R U R' U' F'"
+    },
+    '42': {
+      icon: '/images/oll/advanced/42.png',
+      algorithm: "R' U' R U' R' U2 R F R U R' U' F'"
+    },
+    '39': {
+      icon: '/images/oll/advanced/39.png',
+      algorithm: "L F' L' U' L U F U' L'"
+    },
+    '40': {
+      icon: '/images/oll/advanced/40.png',
+      algorithm: "R' F R U R' U' F' U R"
+    },
+    '34': {
+      icon: '/images/oll/advanced/34.png',
+      algorithm: "R U R2 U' R' F R U R U' F'"
+    },
+    '46': {
+      icon: '/images/oll/advanced/46.png',
+      algorithm: "R' U' R' F R F' U R"
+    },
+    '28': {
+      icon: '/images/oll/advanced/28.png',
+      algorithm: "r U R' U' r' R U R U' R'"
+    },
+    '57': {
+      icon: '/images/oll/advanced/57.png',
+      algorithm: "R U R' U' M' U R U' r'"
+    },
+    '21': {
+      icon: '/images/oll/advanced/21.png',
+      algorithm: "R U2 R' U' R U R' U' R U' R'"
+    },
+    '22': {
+      icon: '/images/oll/advanced/22.png',
+      algorithm: "R U2 R2 U' R2 U' R2 U2 R"
+    },
+    '23': {
+      icon: '/images/oll/advanced/23.png',
+      algorithm: "R2 D' R U2 R' D R U2 R"
+    },
+    '24': {
+      icon: '/images/oll/advanced/24.png',
+      algorithm: "r U R' U' r' F R F'"
+    },
+    '25': {
+      icon: '/images/oll/advanced/25.png',
+      algorithm: "F' r U R' U' r' F R"
+    },
+    '26': {
+      icon: '/images/oll/advanced/26.png',
+      algorithm: "R U2 R' U' R U' R'"
+    },
+    '27': {
+      icon: '/images/oll/advanced/27.png',
+      algorithm: "R U R' U R U2 R'"
+    },
+    '1': {
+      icon: '/images/oll/advanced/1.png',
+      algorithm: "R U2 R2 F R F' U2 R' F R F'"
+    },
+    '2': {
+      icon: '/images/oll/advanced/2.png',
+      algorithm: "r U r' U2 r U2 R' U2 R U' r'"
+    },
+    '3': {
+      icon: '/images/oll/advanced/3.png',
+      algorithm: "r' R2 U R' U r U2 r' U M'"
+    },
+    '4': {
+      icon: '/images/oll/advanced/4.png',
+      algorithm: "M U' r U2 r' U' R U' R' M'"
+    },
+    '17': {
+      icon: '/images/oll/advanced/17.png',
+      algorithm: "F R' F' R2 r' U R U' R' U' M'"
+    },
+    '18': {
+      icon: '/images/oll/advanced/18.png',
+      algorithm: "r U R' U R U2 r2 U' R U' R' U2 r"
+    },
+    '19': {
+      icon: '/images/oll/advanced/19.png',
+      algorithm: "r' R U R U R' U' M' R' F R F'"
+    },
+    '20': {
+      icon: '/images/oll/advanced/20.png',
+      algorithm: "r U R' U' M2 U R U' R' U' M'"
+    },
+    '9': {
+      icon: '/images/oll/advanced/9.png',
+      algorithm: "R U R' U' R' F R2 U R' U' F'"
+    },
+    '10': {
+      icon: '/images/oll/advanced/10.png',
+      algorithm: "R U R' U R' F R F' R U2 R'"
+    },
+    '35': {
+      icon: '/images/oll/advanced/35.png',
+      algorithm: "R U2 R2 F R F' R U2 R'"
+    },
+    '37': {
+      icon: '/images/oll/advanced/37.png',
+      algorithm: "F R' F' R U R U' R'"
+    },
+    '51': {
+      icon: '/images/oll/advanced/51.png',
+      algorithm: "F U R U' R' U R U' R' F'"
+    },
+    '52': {
+      icon: '/images/oll/advanced/52.png',
+      algorithm: "R U R' U R U' B U' B' R'"
+    },
+    '55': {
+      icon: '/images/oll/advanced/55.png',
+      algorithm: "R' F R U R U' R2 F' R2 U' R' U R U R'"
+    },
+    '56': {
+      icon: '/images/oll/advanced/56.png',
+      algorithm: "r' U' r U' R' U R U' R' U R r' U r"
+    },
+    '13': {
+      icon: '/images/oll/advanced/13.png',
+      algorithm: "F U R U' R2 F' R U R U' R'"
+    },
+    '14': {
+      icon: '/images/oll/advanced/14.png',
+      algorithm: "R' F R U R' F' R F U' F'"
+    },
+    '15': {
+      icon: '/images/oll/advanced/15.png',
+      algorithm: "l' U' l L' U' L U l' U l"
+    },
+    '16': {
+      icon: '/images/oll/advanced/16.png',
+      algorithm: "r U r' R U R' U' r U' r'"
+    },
+    '31': {
+      icon: '/images/oll/advanced/31.png',
+      algorithm: "R' U' F U R U' R' F' R"
+    },
+    '32': {
+      icon: '/images/oll/advanced/32.png',
+      algorithm: "L U F' U' L' U L F L'"
+    },
+    '43': {
+      icon: '/images/oll/advanced/43.png',
+      algorithm: "F' U' L' U L F"
+    },
+    '44': {
+      icon: '/images/oll/advanced/44.png',
+      algorithm: "F U R U' R' F'"
+    },
+    '47': {
+      icon: '/images/oll/advanced/47.png',
+      algorithm: "R' U' R' F R F' R' F R F' U R"
+    },
+    '48': {
+      icon: '/images/oll/advanced/48.png',
+      algorithm: "F R U R' U' R U R' U' F'"
+    },
+    '49': {
+      icon: '/images/oll/advanced/49.png',
+      algorithm: "r U' r2 U r2 U r2 U' r"
+    },
+    '50': {
+      icon: '/images/oll/advanced/50.png',
+      algorithm: "r' U r2 U' r2 U' r2 U r'"
+    },
+    '53': {
+      icon: '/images/oll/advanced/53.png',
+      algorithm: "l' U2 L U L' U' L U L' U l"
+    },
+    '54': {
+      icon: '/images/oll/advanced/54.png',
+      algorithm: "r U2 R' U' R U R' U' R U' r'"
+    },
+    '7': {
+      icon: '/images/oll/advanced/7.png',
+      algorithm: "r U R' U R U2 r'"
+    },
+    '8': {
+      icon: '/images/oll/advanced/8.png',
+      algorithm: "l' U' L U' L' U2 l"
+    },
+    '11': {
+      icon: '/images/oll/advanced/11.png',
+      algorithm: "r U R' U R' F R F' R U2 r'"
+    },
+    '12': {
+      icon: '/images/oll/advanced/12.png',
+      algorithm: "M' R' U' R U' R' U2 R U' R r'"
+    },
+    '5': {
+      icon: '/images/oll/advanced/5.png',
+      algorithm: "l' U2 L U L' U l"
+    },
+    '6': {
+      icon: '/images/oll/advanced/6.png',
+      algorithm: "r U2 R' U' R U' r'"
+    },
+    '33': {
+      icon: '/images/oll/advanced/33.png',
+      algorithm: "R U R' U' R' F R F'"
+    },
+    '45': {
+      icon: '/images/oll/advanced/45.png',
+      algorithm: "F R U R' U' F'"
+    },
+    '36': {
+      icon: '/images/oll/advanced/36.png',
+      algorithm: "L' U' L U' L' U L U L F' L' F"
+    },
+    '38': {
+      icon: '/images/oll/advanced/38.png',
+      algorithm: "R U R' U R U' R' U' R' F R F'"
+    },
+  },
+  
+
+  'Permutate Last Layer (PLL)': {
     'Diagonal': {
       icon: '/images/pll/diagonal.png',
       algorithm: "F R U' R' U' R U R' F' R U R' U' R' F R F'"
@@ -115,14 +348,93 @@ const algortihms = {
       algorithm: "M' U M2 U M2 U M' U2 M2"
     },
   },
-
-
-  'TEST //': { // delete me once all moves added
-    // 'Cube Rotation': {
-    //   icon: '/images/test/.png',
-    //   algorithm: "x y z"
-    // },
-  }
+  
+  'Advanced PLL': {
+    'Aa': {
+      icon: '/images/pll/advanced/Aa.png',
+      algorithm: "x L2 D2 L' U' L D2 L' U L'"
+    },
+    'Ab': {
+      icon: '/images/pll/advanced/Ab.png',
+      algorithm: "x' L2 D2 L U L' D2 L U' L"
+    },
+    'F': {
+      icon: '/images/pll/advanced/F.png',
+      algorithm: "R' U' F' R U R' U' R' F R2 U' R' U' R U R' U R"
+    },
+    'Ga': {
+      icon: '/images/pll/advanced/Ga.png',
+      algorithm: "R2 U R' U R' U' R U' R2 U' D R' U R D'"
+    },
+    'Gb': {
+      icon: '/images/pll/advanced/Gb.png',
+      algorithm: "R' U' R U D' R2 U R' U R U' R U' R2 D"
+    },
+    'Gc': {
+      icon: '/images/pll/advanced/Gc.png',
+      algorithm: "R2 U' R U' R U R' U R2 U D' R U' R' D"
+    },
+    'Gd': {
+      icon: '/images/pll/advanced/Gd.png',
+      algorithm: "R U R' U' D R2 U' R U' R' U R' U R2 D'"
+    },
+    'Ja': {
+      icon: '/images/pll/advanced/Ja.png',
+      algorithm: "x R2 F R F' R U2 r' U r U2"
+    },
+    'Jb': {
+      icon: '/images/pll/advanced/Jb.png',
+      algorithm: "R U R' F' R U R' U' R' F R2 U' R'"
+    },
+    'Ra': {
+      icon: '/images/pll/advanced/Ra.png',
+      algorithm: "R U' R' U' R U R D R' U' R D' R' U2 R'"
+    },
+    'Rb': {
+      icon: '/images/pll/advanced/Rb.png',
+      algorithm: "R2 F R U R U' R' F' R U2 R' U2 R"
+    },
+    'T': {
+      icon: '/images/pll/advanced/T.png',
+      algorithm: "R U R' U' R' F R2 U' R' U' R U R' F'"
+    },
+    'E': {
+      icon: '/images/pll/advanced/E.png',
+      algorithm: "x' L' U L D' L' U' L D L' U' L D' L' U L D"
+    },
+    'Na': {
+      icon: '/images/pll/advanced/Na.png',
+      algorithm: "R U R' U R U R' F' R U R' U' R' F R2 U' R' U2 R U' R'"
+    },
+    'Nb': {
+      icon: '/images/pll/advanced/Nb.png',
+      algorithm: "R' U R U' R' F' U' F R U R' F R' F' R U' R"
+    },
+    'V': {
+      icon: '/images/pll/advanced/V.png',
+      algorithm: "R' U R' U' y R' F' R2 U' R' U R' F R F"
+    },
+    'Y': {
+      icon: '/images/pll/advanced/Y.png',
+      algorithm: "F R U' R' U' R U R' F' R U R' U' R' F R F'"
+    },
+    'H': {
+      icon: '/images/pll/advanced/H.png',
+      algorithm: "M2 U M2 U2 M2 U M2"
+    },
+    'Ua': {
+      icon: '/images/pll/advanced/Ua.png',
+      algorithm: "M2 U M U2 M' U M2"
+    },
+    'Ub': {
+      icon: '/images/pll/advanced/Ub.png',
+      algorithm: "M2 U' M U2 M' U' M2"
+    },
+    'Z': {
+      icon: '/images/pll/advanced/Z.png',
+      algorithm: "M' U M2 U M2 U M' U2 M2M' U M2 U M2 U M' U2 M2"
+    },
+  },
 };
 
 const scene = new THREE.Scene(); // create scene
@@ -693,6 +1005,8 @@ solveButton.addEventListener('click', () => {
 async function resetCube() {
   isResetting = true; // set reset flag
 
+  const faceLabelsVisible = faceLabels[0]?.visible; // store the visibility state of the face labels
+
   if (isCubeRotating || isFaceRotating) {
     // wait for current rotation to finish
     await new Promise(resolve => setTimeout(resolve, 1000));
@@ -798,6 +1112,14 @@ async function resetCube() {
       getCenterPieces();
       positionFacePivots();
       addFaceLabels();
+
+      // restore visibility state of face labels
+      if (faceLabelsVisible !== undefined) {
+        faceLabels.forEach(label => {
+          label.visible = faceLabelsVisible;
+          label.material.opacity = faceLabelsVisible ? 1 : 0;
+        });
+      }
       
       isResetting = false;  // reset the flag
       resolve();
@@ -825,14 +1147,48 @@ window.addEventListener('resize', () => {
 // initialize algorithm dropdown menu
 Object.entries(algortihms).forEach(([category, algorithms]) => {
   const dropdownBlock = document.createElement('div');
-  const blockTitle = document.createElement('p');
-  
+  const blockTitle = document.createElement('div');
   blockTitle.classList.add('block-title');
-  blockTitle.textContent = category;
-  dropdownBlock.appendChild(blockTitle);
   
+  // create seperate container for advanced algorithms
+  if (category.includes('Advanced')) {
+    dropdownBlock.classList.add('advanced');
+
+    const titleContainer = document.createElement('div');
+    titleContainer.classList.add('title-container');
+    
+    const titleText = document.createElement('span');
+    titleText.textContent = category;
+    
+    const arrowIcon = document.createElement('span');
+    arrowIcon.classList.add('arrow-icon');
+    arrowIcon.textContent = '▼';
+    
+    titleContainer.appendChild(titleText);
+    titleContainer.appendChild(arrowIcon);
+    blockTitle.appendChild(titleContainer);
+    
+    // Add click handler for toggling
+    titleContainer.addEventListener('click', () => {
+      const content = dropdownBlock.querySelector('.advanced-content');
+      const isHidden = content.style.display === 'none';
+      content.style.display = isHidden ? 'block' : 'none';
+      arrowIcon.textContent = isHidden ? '▲' : '▼';
+    });
+  } else {
+    blockTitle.textContent = category + ' //';
+  }
+  
+  dropdownBlock.appendChild(blockTitle);
   dropdownBlock.classList.add('dropdown-block');
   dropdownContent.appendChild(dropdownBlock);
+  
+  // Create content container for Advanced OLL
+  const contentContainer = document.createElement('div');
+  if (category.includes('Advanced')) {
+    contentContainer.classList.add('advanced-content');
+    contentContainer.style.display = 'none'; // Initially hidden
+  }
   
   // populate dropdown with 'algorithms' object
   Object.entries(algorithms).forEach(([id, data]) => {
@@ -856,7 +1212,7 @@ Object.entries(algortihms).forEach(([category, algorithms]) => {
       solvePairButton.classList.remove('hover-underline');
     });
 
-    dropdownBlock.appendChild(algorithmPair);
+    contentContainer.appendChild(algorithmPair);
     
     const algorithmIcon = document.createElement('img');
     algorithmIcon.classList.add('algorithm-icon');
@@ -924,7 +1280,15 @@ Object.entries(algortihms).forEach(([category, algorithms]) => {
     blockButtons.appendChild(setupButton);
     blockButtons.appendChild(solvePairButton);
   });
+  
+  dropdownBlock.appendChild(contentContainer);
 });
+
+// create footer for dropdown
+const dropdownFooter = document.createElement('div');
+dropdownFooter.classList.add('dropdown-footer');
+dropdownFooter.textContent = '@prodbydisco';
+dropdownContent.appendChild(dropdownFooter);
 
 // event listeners
 dropbtn.addEventListener('mouseenter', () => {
