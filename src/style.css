@@ -66,7 +66,7 @@ canvas {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-top: 20px;
+  margin-top: 48px;
   height: 60px;
 }
 
@@ -117,13 +117,24 @@ canvas {
   box-sizing: border-box;
 }
 
-
 .block-title {
   font-size: 18px;
   font-weight: bolder;
   letter-spacing: 1px;
-  margin: 0 0 18px 24px;
+  margin: 60px 0 18px 24px;
 }
+
+.dropdown-content > .dropdown-block:nth-child(1) > .block-title {
+  margin: 0px 0 18px 24px;
+}
+
+.advanced.dropdown-block > .block-title {
+  margin: 24px 0 12px 24px;
+}
+
+/* .advanced.dropdown-block:nth-last-child(2) > .block-title {
+  margin: 0px 0 18px 24px;
+} */
 
 .title-container {
   display: flex;
@@ -142,12 +153,13 @@ canvas {
   transition: transform 0.2s ease;
 }
 
-.advanced.dropdown-block {
-  margin: 0 0 48px 0;
-}
 
 .advanced.dropdown-block > .block-title {
-  padding: 24px 0 6px 12px;
+  padding-left: 12px;
+}
+
+.advanced.dropdown-block {
+  padding: 0;
 }
 
 .advanced-content {
@@ -157,6 +169,7 @@ canvas {
 .advanced-content > .algorithm-pair {
   padding: 0 38px;
 }
+
 
 .algorithm-pair {
   color: black;
@@ -188,6 +201,7 @@ canvas {
   text-overflow: ellipsis;
 }
 
+
 .block-buttons {
   margin-left: auto;
   display: flex;
@@ -204,6 +218,7 @@ canvas {
   text-decoration: underline;
   cursor: pointer;
 } 
+
 
 .solve-container {
   position: absolute;
@@ -225,12 +240,15 @@ canvas {
   color: rgb(240, 240, 240);
 }
 
+
 .help-container {
   position: absolute;
   gap: 20px;
   flex-direction: column;
   width: 80vw;
   height: max-content;
+  max-height: 90dvh;
+  overflow: scroll;
   left: 50%;
   top: 60px;
   transform: translateX(-50%);
@@ -244,6 +262,10 @@ canvas {
   letter-spacing: 1px;
 
   z-index: 100;
+}
+
+.help-container::-webkit-scrollbar {
+  display: none;
 }
 
 .help-title {
@@ -263,6 +285,7 @@ canvas {
 .help-icons .icon-pair {
   display: flex;
   flex-direction: column;
+  flex: 1;
   align-items: center;
 
   font-size: 22px;
@@ -279,6 +302,7 @@ canvas {
   padding: 14px;
 }
 
+
 .help-content {
   margin-top: 22px;
   width: 100%;
@@ -292,6 +316,7 @@ canvas {
 .help-subtitle {
   font-size: 18px;
 }
+
 
 .help-content ul {
   margin: 0;

@@ -320,6 +320,121 @@ const algortihms = {
       algorithm: "R U R' U R U' R' U' R' F R F'"
     },
   },
+
+  'Cross Orient Last Layer (COLL)': {
+    'H1': {
+      icon: '/images/coll/H1.png',
+      algorithm: "R U R' U R U' R' U R U2 R'"
+    },
+    'H2': {
+      icon: '/images/coll/H2.png',
+      algorithm: "F R U' R' U R U2 R' U' R U R' U' F'"
+    },
+    'H3': {
+      icon: '/images/coll/H3.png',
+      algorithm: "R U R' U R U L' U R' U' L"
+    },
+    'H4': {
+      icon: '/images/coll/H4.png',
+      algorithm: "F R U R' U' R U R' U' R U R' U' F'"
+    },
+    'L1': {
+      icon: '/images/coll/L1.png',
+      algorithm: "R' U2 R U R' U' R U R' U' R U R' U R"
+    },
+    'L2': {
+      icon: '/images/coll/L2.png',
+      algorithm: "R' U2 R' D' R U2 R' D R2"
+    },
+    'L3': {
+      icon: '/images/coll/L3.png',
+      algorithm: "R U2 R D R' U2 R D' R2"
+    },
+    'L4': {
+      icon: '/images/coll/L4.png',
+      algorithm: "F R' F' r U R U' r'"
+    },
+    'L5': {
+      icon: '/images/coll/L5.png',
+      algorithm: "x R' U R D' R' U' R D"
+    },
+    'L6': {
+      icon: '/images/coll/L6.png',
+      algorithm: "R' U' R U R' F' R U R' U' R' F R2"
+    },
+    'P1': {
+      icon: '/images/coll/P1.png',
+      algorithm: "R U2 R2 U' R2 U' R2 U2 R"
+    },
+    'P2': {
+      icon: '/images/coll/P2.png',
+      algorithm: "R' F2 R U2 R U2 R' F2 U' R U' R'"
+    },
+    'P3': {
+      icon: '/images/coll/P3.png',
+      algorithm: "R' U' F' R U R' U' R' F R2 U2 R' U2 R"
+    },
+    'P4': {
+      icon: '/images/coll/P4.png',
+      algorithm: "R U R' U' R' F R2 U R' U' R U R' U' F'"
+    },
+    'P5': {
+      icon: '/images/coll/P5.png',
+      algorithm: "R U' L' U R' U L U L' U L"
+    },
+    'P6': {
+      icon: '/images/coll/P6.png',
+      algorithm: "R2 D' R U R' D R U R U' R' U R U R' U R"
+    },
+    'T1': {
+      icon: '/images/coll/T1.png',
+      algorithm: "R U2 R' U' R U' R2 U2 R U R' U R"
+    },
+    'T2': {
+      icon: '/images/coll/T2.png',
+      algorithm: "R' U R U2 R' L' U R U' L"
+    },
+    'T3': {
+      icon: '/images/coll/T3.png',
+      algorithm: "l' U' L U l F' L' F"
+    },
+    'T4': {
+      icon: '/images/coll/T4.png',
+      algorithm: "F R U R' U' R U' R' U' R U R' F'"
+    },
+    'T5': {
+      icon: '/images/coll/T5.png',
+      algorithm: "r U R' U' r' F R F'"
+    },
+    'T6': {
+      icon: '/images/coll/T6.png',
+      algorithm: "R' U R2 D r' U2 r D' R2 U' R"
+    },
+    'U1': {
+      icon: '/images/coll/U1.png',
+      algorithm: "R' U' R U' R' U2 R2 U R' U R U2 R'"
+    },
+    'U2': {
+      icon: '/images/coll/U2.png',
+      algorithm: "R' F R U' R' U' R U R' F' R U R' U' R' F R F' R"
+    },
+    'U3': {
+      icon: '/images/coll/U3.png',
+      algorithm: "R2 D R' U2 R D' R' U2 R'"
+    },
+    'U4': {
+      icon: '/images/coll/U4.png',
+      algorithm: "F R U' R' U R U R' U R U' R' F'"
+    },
+    'U5': {
+      icon: '/images/coll/U5.png',
+      algorithm: "R2 D' R U2 R' D R U2 R"
+    },
+    'U6': {
+      icon: '/images/coll/U6.png',
+      algorithm: "R2 D' R U R' D R U R U' R' U' R"
+    },
+  },
   
 
   'Permutate Last Layer (PLL)': {
@@ -793,7 +908,7 @@ function rotateFace(face, direction, turns, rotationDuration) {
       reject
     });
 
-    // Start processing queue if not already
+    // start processing queue if not already
     if (!isProcessingQueue) {
       processRotationQueue();
     }
@@ -1168,7 +1283,7 @@ Object.entries(algortihms).forEach(([category, algorithms]) => {
     titleContainer.appendChild(arrowIcon);
     blockTitle.appendChild(titleContainer);
     
-    // Add click handler for toggling
+    // add click handler for toggling
     titleContainer.addEventListener('click', () => {
       const content = dropdownBlock.querySelector('.advanced-content');
       const isHidden = content.style.display === 'none';
@@ -1183,11 +1298,11 @@ Object.entries(algortihms).forEach(([category, algorithms]) => {
   dropdownBlock.classList.add('dropdown-block');
   dropdownContent.appendChild(dropdownBlock);
   
-  // Create content container for Advanced OLL
+  // create content container for Advanced OLL
   const contentContainer = document.createElement('div');
   if (category.includes('Advanced')) {
     contentContainer.classList.add('advanced-content');
-    contentContainer.style.display = 'none'; // Initially hidden
+    contentContainer.style.display = 'none'; // initially hidden
   }
   
   // populate dropdown with 'algorithms' object
@@ -1467,13 +1582,13 @@ function toggleFaceLabels() {
   const targetOpacity = isVisible ? 0 : 1;
   
   faceLabels.forEach(label => {
-    // Set initial state
+    // set initial state
     if (!isVisible) {
       label.visible = true;
       label.material.opacity = 0;
     }
     
-    // Animate opacity
+    // animate opacity
     gsap.to(label.material, {
       opacity: targetOpacity,
       duration: 0.3,
