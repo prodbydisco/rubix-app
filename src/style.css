@@ -272,6 +272,7 @@ canvas {
   font-size: 24px;
   font-weight: bold;
   text-align: center;
+  margin: 12px 0;
 }
 
 .help-icons {
@@ -280,6 +281,10 @@ canvas {
   flex-wrap: wrap;
   justify-content: space-between;
   box-sizing: border-box;
+}
+
+.help-section > .help-icons {
+  margin: 32px 0;
 }
 
 .help-icons .icon-pair {
@@ -299,16 +304,20 @@ canvas {
 
 .icon-pair p {
   margin: 0;
-  padding: 14px;
+  padding-top: 14px;
 }
 
+.help-section > .help-icons > .icon-pair > p {
+  font-size: 18px;
+  padding-bottom: 6px;
+}
 
 .help-content {
   margin-top: 22px;
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 36px;
+  gap: 48px;
 
   box-sizing: border-box;
 }
