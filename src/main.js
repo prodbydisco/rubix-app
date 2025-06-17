@@ -507,8 +507,11 @@ async function processRotationQueue() {
         
         let cubeletsToRotate = [...cubelets];
         if (excludeFace) {
-          const faceCubelets = identifyFaceCubelets()[excludeFace];
-          cubeletsToRotate = cubeletsToRotate.filter(cubelet => !faceCubelets.includes(cubelet));
+          const faceCubelets = identifyFaceCubelets();
+          const excludedCubelets = Array.isArray(excludeFace) 
+            ? excludeFace.flatMap(face => faceCubelets[face])
+            : faceCubelets[excludeFace];
+          cubeletsToRotate = cubeletsToRotate.filter(cubelet => !excludedCubelets.includes(cubelet));
         }
 
         transformCubelets(cubeletsToRotate, cubePivot, 'attach');
@@ -680,7 +683,11 @@ async function solve() {
   
   lastAlgorithm = [];  // this will only execute after the algorithm is complete
 }
-solveButton.addEventListener('click', () => solve().catch(console.error));
+solveButton.addEventListener('click', () => {
+  if (solveButton.classList.contains('disabled')) return;
+  
+  solve().catch(console.error);
+});
 
 
 async function resetCube() {
@@ -893,15 +900,17 @@ Object.entries(algortihms).forEach(([category, algorithms]) => {
       }
     });
     
-    setupButton.addEventListener('click', (event) => {
+    setupButton.addEventListener('click', async (event) => {
       event.stopPropagation(); // stop event from bubbling up to parent
+      
+      dropdownContent.classList.add('hidden');
       algorithmPlaceholder.textContent = data.algorithm;
-      executeReverse(data.algorithm, 0.2);
+      
+      await executeReverse(data.algorithm, 0.2);
       
       solveButton.classList.remove('disabled');
       solveButton.classList.add('enabled');
       
-      dropdownContent.classList.add('hidden');
     });
     
     solvePairButton.addEventListener('click', (event) => {
@@ -930,6 +939,7 @@ window.addEventListener('keydown', (event) => {
   if (event.key !== 'F12') {event.preventDefault()};
 
   switch(event.key) {
+    // face rotations
     case 'f': rotateFace('front', 'clockwise', 1, 0.3); break;
     case 'F': rotateFace('front', 'counterclockwise', 1, 0.3); break;
     case 'b': rotateFace('back', 'clockwise', 1, 0.3); break;
@@ -943,6 +953,29 @@ window.addEventListener('keydown', (event) => {
     case 'r': rotateFace('right', 'clockwise', 1, 0.3); break;
     case 'R': rotateFace('right', 'counterclockwise', 1, 0.3); break;
     
+    // double face rotations (number keys)
+    case '1': executeMove('u', 0.3); break;  // up double layer
+    case '!': executeMove("u'", 0.3); break;
+    case '2': executeMove('d', 0.3); break;  // down double layer
+    case '@': executeMove("d'", 0.3); break;
+    case '3': executeMove('l', 0.3); break;  // left double layer
+    case '#': executeMove("l'", 0.3); break;
+    case '4': executeMove('r', 0.3); break;  // right double layer
+    case '$': executeMove("r'", 0.3); break;
+    case '5': executeMove('f', 0.3); break;  // front double layer
+    case '%': executeMove("f'", 0.3); break;
+    case '6': executeMove('b', 0.3); break;  // back double layer
+    case '^': executeMove("b'", 0.3); break;
+    
+    // middle layer rotations
+    case 'm': executeMove('M', 0.3); break;
+    case 'M': executeMove("M'", 0.3); break;
+    case 'e': executeMove('E', 0.3); break;
+    case 'E': executeMove("E'", 0.3); break;
+    case 's': executeMove('S', 0.3); break;
+    case 'S': executeMove("S'", 0.3); break;
+    
+    // entire cube rotations
     case 'ArrowRight': rotateCube('y', 1, 0.35); break;
     case 'ArrowLeft': rotateCube('-y', 1, 0.35); break;
     case 'ArrowUp': rotateCube('-x', 1, 0.35); break;
@@ -1005,6 +1038,17 @@ async function executeMove(notation, rotationDuration) {
     "R": () => rotateFace('right', 'clockwise', 1, rotationDuration),
     "R2": () => rotateFace('right', 'clockwise', 2, rotationDuration),
     "R'": () => rotateFace('right', 'counterclockwise', 1, rotationDuration),
+    
+    // middle layer rotations
+    "M": () => rotateCube('x', 1, rotationDuration, ['left', 'right']),
+    "M2": () => rotateCube('x', 2, rotationDuration, ['left', 'right']),
+    "M'": () => rotateCube('-x', 1, rotationDuration, ['left', 'right']),
+    "E": () => rotateCube('y', 1, rotationDuration, ['up', 'down']),
+    "E2": () => rotateCube('y', 2, rotationDuration, ['up', 'down']),
+    "E'": () => rotateCube('-y', 1, rotationDuration, ['up', 'down']),
+    "S": () => rotateCube('-z', 1, rotationDuration, ['front', 'back']),
+    "S2": () => rotateCube('z', 2, rotationDuration, ['front', 'back']),
+    "S'": () => rotateCube('z', 1, rotationDuration, ['front', 'back']),
     
     // entire cube rotations
     "x": () => rotateCube('-x', 1, rotationDuration),
