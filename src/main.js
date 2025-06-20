@@ -882,6 +882,8 @@ function getFaceRotationParams(face, direction, turns) {
 
 
 function rotateCube(axis, turns, rotationDuration, excludeFace = null) {
+  if (excludeFace !== null) playSound('double');
+  
   return new Promise((resolve, reject) => {
     // add rotation to queue
     rotationQueue.push({
@@ -899,6 +901,8 @@ function rotateCube(axis, turns, rotationDuration, excludeFace = null) {
 }
 
 function rotateFace(face, direction, turns, rotationDuration) {
+  playSound('single');
+  
   return new Promise((resolve, reject) => {
     // add rotation to queue
     rotationQueue.push({
@@ -907,6 +911,7 @@ function rotateFace(face, direction, turns, rotationDuration) {
       resolve,
       reject
     });
+
 
     // start processing queue if not already
     if (!isProcessingQueue) {
@@ -1563,6 +1568,24 @@ async function executeMove(notation, rotationDuration) {
   }
 }
 
+function playSound(multiplier) {
+   const moveSounds = [
+    '/sounds/move1.wav', '/sounds/move2.wav', '/sounds/move3.wav', '/sounds/move4.wav',
+    '/sounds/move5.wav', '/sounds/move6.wav', '/sounds/move7.wav'
+  ];
+
+  const dblMoveSounds = [
+    '/sounds/double-move1.wav', '/sounds/double-move2.wav', '/sounds/double-move3.wav'
+  ];
+  
+  const randomSingle = moveSounds[Math.floor(Math.random() * moveSounds.length)];
+  const randomDouble = dblMoveSounds[Math.floor(Math.random() * dblMoveSounds.length)];
+  const audio = new Audio(multiplier === 'single' ? randomSingle : randomDouble);
+  audio.volume = 0.05;
+  audio.play().catch(() => {}); // ignore play errors
+}
+
+
 // click help button to toggle menu, click outside of container to close
 helpButton.addEventListener('click', (event) => {
   event.stopPropagation(); // prevent click from bubbling up
@@ -1575,6 +1598,7 @@ document.addEventListener('click', (event) => {
     helpContainer.style.display = 'none';
   }
 });
+
 
 // toggle face labels visibility
 function toggleFaceLabels() {
