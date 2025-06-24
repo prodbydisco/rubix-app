@@ -1,3 +1,3 @@
 # rubix-cube
 
-url: https://prodbydisco.github.io/rubix-app/
+https://prodbydisco.github.io/rubix-app/
