@@ -1419,7 +1419,6 @@ resetButton.addEventListener('click', () => resetCube().catch(console.error));
 
 // keyboard controls
 window.addEventListener('keydown', (event) => {
-  console.log(`Key pressed: ${event.key}`);
   if (event.key !== 'F12') {event.preventDefault()};
 
   switch(event.key) {
@@ -1570,12 +1569,12 @@ async function executeMove(notation, rotationDuration) {
 
 function playSound(multiplier) {
    const moveSounds = [
-    '/sounds/move1.wav', '/sounds/move2.wav', '/sounds/move3.wav', '/sounds/move4.wav',
-    '/sounds/move5.wav', '/sounds/move6.wav', '/sounds/move7.wav'
+    '/sounds/move1.mp3', '/sounds/move2.mp3', '/sounds/move3.mp3', '/sounds/move4.mp3',
+    '/sounds/move5.mp3', '/sounds/move6.mp3', '/sounds/move7.mp3'
   ];
 
   const dblMoveSounds = [
-    '/sounds/double-move1.wav', '/sounds/double-move2.wav', '/sounds/double-move3.wav'
+    '/sounds/double1.mp3', '/sounds/double2.mp3', '/sounds/double3.mp3'
   ];
   
   const randomSingle = moveSounds[Math.floor(Math.random() * moveSounds.length)];
