@@ -1341,6 +1341,7 @@ Object.entries(algortihms).forEach(([category, algorithms]) => {
       algorithmPlaceholder.textContent = data.algorithm;
       executeAlgorithm(data.algorithm, 0.5);
       dropdownContent.style.display = 'none'; // close menu
+      dropbtnArrow.textContent = '▼'; // update arrow
     });
 
     contentContainer.appendChild(algorithmPair);
@@ -1374,6 +1375,7 @@ Object.entries(algortihms).forEach(([category, algorithms]) => {
     setupButton.addEventListener('click', async (event) => {
       event.stopPropagation(); // stop event from bubbling up to parent
       dropdownContent.style.display = 'none';
+      dropbtnArrow.textContent = '▼'; // update arrow
       algorithmPlaceholder.textContent = data.algorithm;
       await executeReverse(data.algorithm, 0.2);
       solveButton.classList.remove('disabled');
