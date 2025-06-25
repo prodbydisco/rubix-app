@@ -1632,3 +1632,71 @@ function toggleFaceLabels() {
     });
   });
 }
+
+// TOUCH-SCREEN CONTROLS //
+
+// detect touch device
+function isTouchDevice() {
+  return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+}
+
+if (isTouchDevice()) {
+  let lastTapTime = 0;
+  let tapTimeout = null;
+  let lastTappedLabel = null;
+
+  // raycaster for detecting taps on face labels
+  const raycaster = new THREE.Raycaster();
+  const tapVector = new THREE.Vector2();
+
+  // get face from label mesh
+  function getFaceFromLabel(labelMesh) {
+    const labelIndex = faceLabels.indexOf(labelMesh);
+    if (labelIndex === -1) return null;
+    return ['front', 'back', 'up', 'down', 'left', 'right'][labelIndex];
+  }
+
+  // convert touch to normalized device coordinates
+  function getNDCFromTouch(touch) {
+    const rect = renderer.domElement.getBoundingClientRect();
+    return {
+      x: ((touch.clientX - rect.left) / rect.width) * 2 - 1,
+      y: -((touch.clientY - rect.top) / rect.height) * 2 + 1
+    };
+  }
+
+  function handleLabelTap(touch) {
+    const ndc = getNDCFromTouch(touch);
+    const intersects = raycaster.intersectObjects(faceLabels, false);
+
+    tapVector.set(ndc.x, ndc.y);
+    raycaster.setFromCamera(tapVector, camera);
+    
+    if (intersects.length > 0) {
+      const labelMesh = intersects[0].object;
+      const face = getFaceFromLabel(labelMesh);
+      const now = Date.now();
+
+      if (!face) return;
+      
+      if (lastTappedLabel === labelMesh && now - lastTapTime < 350) { // double-tap: counterclockwise
+        rotateFace(face, 'counterclockwise', 1, 0.3);
+        lastTappedLabel = null;
+        clearTimeout(tapTimeout);
+      } else { // single tap: clockwise (wait to see if double-tap)
+        lastTappedLabel = labelMesh;
+        lastTapTime = now;
+        tapTimeout = setTimeout(() => {
+          rotateFace(face, 'clockwise', 1, 0.3);
+          lastTappedLabel = null;
+        }, 350);
+      }
+    }
+  }
+
+  renderer.domElement.addEventListener('touchstart', function(e) {
+    if (e.touches.length === 1) {
+      handleLabelTap(e.touches[0]);
+    }
+  }, { passive: true });
+}
