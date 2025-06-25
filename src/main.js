@@ -1246,8 +1246,34 @@ async function resetCube() {
 resetButton.addEventListener('click', () => resetCube().catch(console.error));
 
 
-dropbtn.addEventListener('mouseenter', () => {
-  dropdownContent.classList.remove('hidden');
+// add arrow to 'dropbtn' HTML
+if (!dropbtn.querySelector('.dropbtn-arrow')) {
+  dropbtn.innerHTML = 'Algorithms <span class="dropbtn-arrow">▼</span>';
+}
+const dropbtnArrow = dropbtn.querySelector('.dropbtn-arrow');
+
+// toggle dropdown menu on click
+function toggleDropdownMenu() {
+  const isOpen = dropdownContent.style.display === 'block';
+  if (isOpen) {
+    dropdownContent.style.display = 'none';
+    dropbtnArrow.textContent = '▼';
+  } else {
+    dropdownContent.style.display = 'block';
+    dropbtnArrow.textContent = '▲';
+  }
+}
+dropbtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  toggleDropdownMenu();
+});
+
+// close dropdown if clicking outside
+window.addEventListener('click', (e) => {
+  if (!dropdownContent.contains(e.target) && e.target !== dropbtn && !dropbtn.contains(e.target)) {
+    dropdownContent.style.display = 'none';
+    dropbtnArrow.textContent = '▼';
+  }
 });
 
 
@@ -1314,7 +1340,7 @@ Object.entries(algortihms).forEach(([category, algorithms]) => {
     algorithmPair.addEventListener('click', () => {
       algorithmPlaceholder.textContent = data.algorithm;
       executeAlgorithm(data.algorithm, 0.5);
-      dropdownContent.classList.add('hidden'); // close menu
+      dropdownContent.style.display = 'none'; // close menu
     });
 
     contentContainer.appendChild(algorithmPair);
@@ -1347,7 +1373,7 @@ Object.entries(algortihms).forEach(([category, algorithms]) => {
     
     setupButton.addEventListener('click', async (event) => {
       event.stopPropagation(); // stop event from bubbling up to parent
-      dropdownContent.classList.add('hidden');
+      dropdownContent.style.display = 'none';
       algorithmPlaceholder.textContent = data.algorithm;
       await executeReverse(data.algorithm, 0.2);
       solveButton.classList.remove('disabled');
@@ -1365,13 +1391,6 @@ const dropdownFooter = document.createElement('div');
 dropdownFooter.classList.add('dropdown-footer');
 dropdownFooter.textContent = '@prodbydisco';
 dropdownContent.appendChild(dropdownFooter);
-
-// event listeners
-dropbtn.addEventListener('mouseenter', () => {
-  dropdownContent.classList.remove('hidden');
-});
-
-resetButton.addEventListener('click', () => resetCube().catch(console.error));
 
 // keyboard controls
 window.addEventListener('keydown', (event) => {
@@ -1523,8 +1542,41 @@ async function executeMove(notation, rotationDuration) {
   }
 }
 
+let isMuted = false;
+
+// add mute button to DOM
+function createMuteButton() {
+  const btn = document.createElement('button');
+  btn.className = 'mute-btn';
+  btn.setAttribute('aria-label', 'Mute/Unmute sound effects');
+  btn.innerHTML = getMuteSVG(false);
+  btn.addEventListener('click', () => {
+    isMuted = !isMuted;
+    btn.classList.toggle('muted', isMuted);
+    btn.innerHTML = getMuteSVG(isMuted);
+  });
+  document.body.appendChild(btn);
+}
+
+function getMuteSVG(muted) {
+  if (muted) {
+    // muted speaker icon
+    return `<img src="/images/icons/sound-off.svg" alt="Muted" style="width:24px;height:24px;">`;
+  } else {
+    // speaker icon
+    return `<img src="/images/icons/sound-on.svg" alt="Sound on" style="width:24px;height:24px;">`;
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', createMuteButton);
+} else {
+  createMuteButton();
+}
+
 function playSound(multiplier) {
-   const moveSounds = [
+  if (isMuted) return;
+  const moveSounds = [
     '/sounds/move1.mp3', '/sounds/move2.mp3', '/sounds/move3.mp3', '/sounds/move4.mp3',
     '/sounds/move5.mp3', '/sounds/move6.mp3', '/sounds/move7.mp3'
   ];
