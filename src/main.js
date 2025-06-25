@@ -1546,34 +1546,27 @@ async function executeMove(notation, rotationDuration) {
 
 let isMuted = false;
 
-// add mute button to DOM
-function createMuteButton() {
-  const btn = document.createElement('button');
-  btn.className = 'mute-btn';
-  btn.setAttribute('aria-label', 'Mute/Unmute sound effects');
-  btn.innerHTML = getMuteSVG(false);
-  btn.addEventListener('click', () => {
+// initialize mute button from DOM
+const muteBtn = document.querySelector('.mute-btn');
+if (muteBtn) {
+  const soundOnImg = muteBtn.querySelector('.sound-on');
+  const soundOffImg = muteBtn.querySelector('.sound-off');
+  const updateMuteIcon = () => {
+    if (isMuted) {
+      soundOnImg.style.display = 'none';
+      soundOffImg.style.display = '';
+      muteBtn.classList.add('muted');
+    } else {
+      soundOnImg.style.display = '';
+      soundOffImg.style.display = 'none';
+      muteBtn.classList.remove('muted');
+    }
+  };
+  updateMuteIcon();
+  muteBtn.addEventListener('click', () => {
     isMuted = !isMuted;
-    btn.classList.toggle('muted', isMuted);
-    btn.innerHTML = getMuteSVG(isMuted);
+    updateMuteIcon();
   });
-  document.body.appendChild(btn);
-}
-
-function getMuteSVG(muted) {
-  if (muted) {
-    // muted speaker icon
-    return `<img src="/images/icons/sound-off.svg" alt="Muted" style="width:24px;height:24px;">`;
-  } else {
-    // speaker icon
-    return `<img src="/images/icons/sound-on.svg" alt="Sound on" style="width:24px;height:24px;">`;
-  }
-}
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', createMuteButton);
-} else {
-  createMuteButton();
 }
 
 function playSound(multiplier) {
