@@ -217,7 +217,7 @@ canvas {
 .hover-underline {
   text-decoration: underline;
   cursor: pointer;
-} 
+}
 
 
 .solve-container {
@@ -343,4 +343,67 @@ canvas {
   font-size: 14px;
   font-style: italic;
   letter-spacing: 0px;
+}
+
+
+/* TABLET & MOBILE SCALING */
+@media (max-width: 768px) {
+  /* .algorithm-pair img {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+  } 
+  
+  .arrow-icon {
+    font-size: 14px;
+    transition: transform 0.2s ease;
+  }
+
+  .advanced.dropdown-block > .block-title {
+    padding-left: 12px;
+  }
+
+  .advanced.dropdown-block {
+    padding: 0;
+  }
+
+  .advanced-content {
+    transition: all 0.3s ease;
+  }
+
+  .advanced-content > .algorithm-pair {
+    padding: 0 38px;
+  }
+  */
+  
+  .block-title {
+    font-size: 16px;
+    letter-spacing: 0px;
+  }
+
+  .algorithm-pair {
+    padding: 0 20px;
+  }
+
+  .algorithm-pair p {
+    margin-left: 16px;
+    font-size: 12px;
+    overflow:scroll;
+    text-overflow: clip;
+  }
+
+  .block-buttons {
+    gap: 0px;
+    font-size: 12px;
+  }
+
+
+  .advanced.dropdown-block > .block-title {
+    padding-left: 6px;
+  }
+
+  .advanced-content > .algorithm-pair {
+    padding: 0 18px 0 24px;
+  }
+  
 }

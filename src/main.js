@@ -1063,18 +1063,14 @@ function identifyFaceCubelets() {
 }
 
 async function executeAlgorithm(algorithm, rotationDuration) {
-  console.log(`Executing algorithm: ${algorithm}`);
   const algorithmArray = algorithm.split(' ');
   
   
   async function executeMoves() {
     for (const notation of algorithmArray) {
       if (isResetting) {
-        console.log('Reset requested, stopping algorithm execution');
         return;
       }
-
-      console.log('executing: ', notation);
 
       try {
         await executeMove(notation, rotationDuration);
@@ -1105,7 +1101,6 @@ async function executeReverse(algorithm, animationDuration) {
 }
 
 async function solve() {
-  console.log(lastAlgorithm.length);
   if (lastAlgorithm.length === 0) return;
 
   solveButton.classList.remove('enabled');
@@ -1315,21 +1310,11 @@ Object.entries(algortihms).forEach(([category, algorithms]) => {
     const algorithmPair = document.createElement('div');
     algorithmPair.classList.add('algorithm-pair');
     
-    // setup cube using the reverse of the solving algorithm (ready for user to solve)
+    // clicking the row (not the setup button) solves (executes the algorithm)
     algorithmPair.addEventListener('click', () => {
       algorithmPlaceholder.textContent = data.algorithm;
       executeAlgorithm(data.algorithm, 0.5);
-      
       dropdownContent.classList.add('hidden'); // close menu
-    });
-
-    // add hover effects for the solve button
-    algorithmPair.addEventListener('mouseenter', () => {
-      solvePairButton.classList.add('hover-underline');
-    });
-    
-    algorithmPair.addEventListener('mouseleave', () => {
-      solvePairButton.classList.remove('hover-underline');
     });
 
     contentContainer.appendChild(algorithmPair);
@@ -1343,7 +1328,7 @@ Object.entries(algortihms).forEach(([category, algorithms]) => {
     algorithmMoves.textContent = data.algorithm;
     algorithmPair.appendChild(algorithmMoves);
 
-    // setup/solve buttons
+    // setup button only
     const blockButtons = document.createElement('div');
     blockButtons.classList.add('block-buttons');
     algorithmPair.appendChild(blockButtons);
@@ -1351,54 +1336,25 @@ Object.entries(algortihms).forEach(([category, algorithms]) => {
     const setupButton = document.createElement('p');
     setupButton.classList.add('block-button');
     setupButton.textContent = 'Setup';
-    
-    const solvePairButton = document.createElement('p');
-    solvePairButton.classList.add('block-button');
-    solvePairButton.textContent = 'Solve'; 
-    
-    // add hover effects for the solve button
-    algorithmPair.addEventListener('mouseenter', () => {
-      solvePairButton.classList.add('hover-underline');
-    });
-    
-    algorithmPair.addEventListener('mouseleave', () => {
-      solvePairButton.classList.remove('hover-underline');
-    });
 
-    // remove underline when hovering over setup button
+    // hover effect for setup button only
     setupButton.addEventListener('mouseenter', () => {
-      solvePairButton.classList.remove('hover-underline');
+      setupButton.classList.add('hover-underline');
     });
-
     setupButton.addEventListener('mouseleave', () => {
-      if (algorithmPair.matches(':hover')) {
-        solvePairButton.classList.add('hover-underline');
-      }
+      setupButton.classList.remove('hover-underline');
     });
     
     setupButton.addEventListener('click', async (event) => {
       event.stopPropagation(); // stop event from bubbling up to parent
-      
       dropdownContent.classList.add('hidden');
       algorithmPlaceholder.textContent = data.algorithm;
-      
       await executeReverse(data.algorithm, 0.2);
-      
       solveButton.classList.remove('disabled');
       solveButton.classList.add('enabled');
-      
-    });
-    
-    solvePairButton.addEventListener('click', (event) => {
-      event.stopPropagation(); // stop event from bubbling up to parent
-      algorithmPlaceholder.textContent = data.algorithm;
-      executeAlgorithm(data.algorithm, 0.5);
-      
-      dropdownContent.classList.add('hidden');
     });
 
     blockButtons.appendChild(setupButton);
-    blockButtons.appendChild(solvePairButton);
   });
   
   dropdownBlock.appendChild(contentContainer);
