@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
   <title>rubix.app</title>
-  <link rel="icon" type="image/x-icon" href="./images/icons/rubix-cube.png">
+  <link rel="icon" type="image/x-icon" href="/images/icons/rubix-cube.png">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Jersey+10&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
-  <script type="module" crossorigin src="./assets/index-1avgVtbV.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-C12w72zA.css">
+  <script type="module" crossorigin src="/assets/index-r3MHKUj2.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-EdYvOSg5.css">
 </head>
 
 <body>
@@ -26,11 +26,16 @@
     </div>
 
     <div class="header-right">
-      <img id="help" src="./images/icons/question.svg" alt="Help">
-      <img id="shuffle" src="./images/icons/shuffle.svg" alt="Shuffle">
-      <img id="reset" src="./images/icons/reset.svg" alt="Reset">
+      <img id="help" src="/images/icons/question.svg" alt="Help">
+      <img id="shuffle" src="/images/icons/shuffle.svg" alt="Shuffle">
+      <img id="reset" src="/images/icons/reset.svg" alt="Reset">
     </div>
   </div>
+
+  <button class="mute-btn" aria-label="Mute/Unmute sound effects">
+    <img class="sound-on" src="/images/icons/sound-on.svg" alt="Sound on" style="width:24px;height:24px;">
+    <img class="sound-off" src="/images/icons/sound-off.svg" alt="Muted" style="width:24px;height:24px; display:none;">
+  </button>
 
   <div class="help-container" style="display: none">
      <p class="help-title">HELP! I NEED SOMEBODY!</p>
@@ -39,32 +44,32 @@
       <div class="help-icons">
         
         <div class="icon-pair">
-          <img src="./images/notations/up.png" alt="Up">
+          <img src="/images/notations/up.png" alt="Up">
           <p>U</p>
         </div>
 
         <div class="icon-pair">
-          <img src="./images/notations/down.png" alt="Down">
+          <img src="/images/notations/down.png" alt="Down">
           <p>D</p>
         </div>
 
         <div class="icon-pair">
-          <img src="./images/notations/left.png" alt="Left">
+          <img src="/images/notations/left.png" alt="Left">
           <p>L</p>
         </div>
 
         <div class="icon-pair">
-          <img src="./images/notations/right.png" alt="Right">
+          <img src="/images/notations/right.png" alt="Right">
           <p>R</p>
         </div>
 
         <div class="icon-pair">
-          <img src="./images/notations/front.png" alt="Front">
+          <img src="/images/notations/front.png" alt="Front">
           <p>F</p>
         </div>
 
         <div class="icon-pair">
-          <img src="./images/notations/back.png" alt="Back">
+          <img src="/images/notations/back.png" alt="Back">
           <p>B</p>
         </div>
       
@@ -72,14 +77,14 @@
       <div class="help-section">
         <p class="help-subtitle">FACE TURNS //</p>
         <ul>
-          <li>U - up</li>
-          <li>D - down</li>
-          <li>L - left</li>
-          <li>R - right</li>
-          <li>F - front</li>
-          <li>B - back</li>
-          <li>' - opposite direction</li>
-          <li>2 - double move</li>
+          <li>U <span class="definition">- up</span></li>
+          <li>D <span class="definition">- down</span></li>
+          <li>L <span class="definition">- left</span></li>
+          <li>R <span class="definition">- right</span></li>
+          <li>F <span class="definition">- front</span></li>
+          <li>B <span class="definition">- back</span></li>
+          <li>' <span class="definition">- opposite direction</span></li>
+          <li>2 <span class="definition">- double move</span></li>
         </ul>
         <p class="disclaimer">*Each side's regular direction is clockwise as if the cube was facing you.</p>
       </div>
@@ -90,43 +95,43 @@
         <div class="help-icons">
         
           <div class="icon-pair">
-            <img src="./images/notations/u.png" alt="Double Face Rotation u">
+            <img src="/images/notations/u.png" alt="Double Face Rotation u">
             <p>u</p>
           </div>
   
           <div class="icon-pair">
-            <img src="./images/notations/d.png" alt="Double Face Rotation d">
+            <img src="/images/notations/d.png" alt="Double Face Rotation d">
             <p>d</p>
           </div>
   
           <div class="icon-pair">
-            <img src="./images/notations/l.png" alt="Double Face Rotation l">
+            <img src="/images/notations/l.png" alt="Double Face Rotation l">
             <p>l</p>
           </div>
 
           <div class="icon-pair">
-            <img src="./images/notations/r.png" alt="Double Face Rotation r">
+            <img src="/images/notations/r.png" alt="Double Face Rotation r">
             <p>r</p>
           </div>
 
           <div class="icon-pair">
-            <img src="./images/notations/f.png" alt="Double Face Rotation f">
+            <img src="/images/notations/f.png" alt="Double Face Rotation f">
             <p>f</p>
           </div>
 
           <div class="icon-pair">
-            <img src="./images/notations/b.png" alt="Double Face Rotation b">
+            <img src="/images/notations/b.png" alt="Double Face Rotation b">
             <p>b</p>
           </div>
         </div>
 
         <ul>
-          <li>u - up</li>
-          <li>d - down</li>
-          <li>l - left</li>
-          <li>r - right</li>
-          <li>f - front</li>
-          <li>b - back</li>
+          <li>u <span class="definition">- up</span></li>
+          <li>d <span class="definition">- down</span></li>
+          <li>l <span class="definition">- left</span></li>
+          <li>r <span class="definition">- right</span></li>
+          <li>f <span class="definition">- front</span></li>
+          <li>b <span class="definition">- back</span></li>
         </ul>
         <p class="disclaimer">*The second layer will be one in from the indicated face. Also includes variable moves (', 2).</p>
       </div>
@@ -139,25 +144,25 @@
         <div class="help-icons">
         
           <div class="icon-pair">
-            <img src="./images/notations/M.png" alt="Middle M Turn">
+            <img src="/images/notations/M.png" alt="Middle M Turn">
             <p>M</p>
           </div>
   
           <div class="icon-pair">
-            <img src="./images/notations/E.png" alt="Middle E Turn">
+            <img src="/images/notations/E.png" alt="Middle E Turn">
             <p>E</p>
           </div>
   
           <div class="icon-pair">
-            <img src="./images/notations/S.png" alt="Middle S Turn">
+            <img src="/images/notations/S.png" alt="Middle S Turn">
             <p>S</p>
           </div>
         </div>
 
         <ul>
-          <li>M - 1 layer in from the left face</li>
-          <li>E - 1 layer in from the bottom face</li>
-          <li>S - 1 layer in from the front face</li>
+          <li>M <span class="definition">- 1 layer in from the left face</span></li>
+          <li>E <span class="definition">- 1 layer in from the bottom face</span></li>
+          <li>S <span class="definition">- 1 layer in from the front face</span></li>
         </ul>
         <p class="disclaimer">*M follows the same direction as L because M is closer to L than R in the alphabet. The same idea applies for E and S.</p>
       </div>
@@ -168,30 +173,42 @@
         <div class="help-icons">
         
           <div class="icon-pair">
-            <img src="./images/notations/x.png" alt="Cube Rotation X">
+            <img src="/images/notations/x.png" alt="Cube Rotation X">
             <p>x</p>
           </div>
   
           <div class="icon-pair">
-            <img src="./images/notations/y.png" alt="Cube Rotation Y">
+            <img src="/images/notations/y.png" alt="Cube Rotation Y">
             <p>y</p>
           </div>
   
           <div class="icon-pair">
-            <img src="./images/notations/z.png" alt="Cube Rotation Z">
+            <img src="/images/notations/z.png" alt="Cube Rotation Z">
             <p>z</p>
           </div>
         </div>
 
         <ul>
-          <li>x - follows the R direction</li>
-          <li>y - follows the U direction</li>
-          <li>z - follows the F direction</li>
+          <li>x <span class="definition">- follows the R direction</span></li>
+          <li>y <span class="definition">- follows the U direction</span></li>
+          <li>z <span class="definition">- follows the F direction</span></li>
         </ul>
         <p class="disclaimer">*x follows the same direction as R because x is closer to R than L in the alphabet. The same idea applies for y and z.</p>
       </div>
 
-      
+  
+      <div class="help-section">
+        <div class="keybind-help">
+          <p class="help-subtitle">KEYBOARD CONTROLS //</p>
+          <ul>
+            <li>u, d, l, r, f, b <span class="definition">- rotate face</span></li>
+            <li>1, 2, 3, 4, 5, 6 <span class="definition">- rotate two faces</span></li>
+            <li>m, e, s <span class="definition">- rotate middle layers</span></li>
+            <li>arrow keys <span class="definition">- rotate entire cube</span></li>
+          </ul>
+          <p class="disclaimer">*pressing a key while holding shift will execute the inverse of that move.</p>
+        </div>
+      </div>
      </div>
   </div>
 
