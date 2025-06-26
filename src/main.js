@@ -1351,9 +1351,14 @@ Object.entries(algortihms).forEach(([category, algorithms]) => {
     algorithmIcon.src = data.icon;
     algorithmPair.appendChild(algorithmIcon);
     
+    // container for text overflow gradient (fade out)
+    const algorithmMovesContainer = document.createElement('div');
+    algorithmMovesContainer.classList.add('algorithm-moves-container');
+
     const algorithmMoves = document.createElement('p');
     algorithmMoves.textContent = data.algorithm;
-    algorithmPair.appendChild(algorithmMoves);
+    algorithmMovesContainer.appendChild(algorithmMoves);
+    algorithmPair.appendChild(algorithmMovesContainer);
 
     // setup button only
     const blockButtons = document.createElement('div');
@@ -1569,22 +1574,38 @@ if (muteBtn) {
   });
 }
 
+// preload sounds
+const moveSounds = [
+  new Audio('/sounds/move1.mp3'),
+  new Audio('/sounds/move2.mp3'),
+  new Audio('/sounds/move3.mp3'),
+  new Audio('/sounds/move4.mp3'),
+  new Audio('/sounds/move5.mp3'),
+  new Audio('/sounds/move6.mp3'),
+  new Audio('/sounds/move7.mp3')
+];
+const dblMoveSounds = [
+  new Audio('/sounds/double1.mp3'),
+  new Audio('/sounds/double2.mp3'),
+  new Audio('/sounds/double3.mp3')
+];
+// Set volume and preload
+[...moveSounds, ...dblMoveSounds].forEach(audio => {
+  audio.volume = 0.05;
+  audio.load();
+});
+
 function playSound(multiplier) {
   if (isMuted) return;
-  const moveSounds = [
-    '/sounds/move1.mp3', '/sounds/move2.mp3', '/sounds/move3.mp3', '/sounds/move4.mp3',
-    '/sounds/move5.mp3', '/sounds/move6.mp3', '/sounds/move7.mp3'
-  ];
-
-  const dblMoveSounds = [
-    '/sounds/double1.mp3', '/sounds/double2.mp3', '/sounds/double3.mp3'
-  ];
-  
-  const randomSingle = moveSounds[Math.floor(Math.random() * moveSounds.length)];
-  const randomDouble = dblMoveSounds[Math.floor(Math.random() * dblMoveSounds.length)];
-  const audio = new Audio(multiplier === 'single' ? randomSingle : randomDouble);
-  audio.volume = 0.05;
-  audio.play().catch(() => {}); // ignore play errors
+  let audio;
+  if (multiplier === 'single') {
+    audio = moveSounds[Math.floor(Math.random() * moveSounds.length)];
+  } else {
+    audio = dblMoveSounds[Math.floor(Math.random() * dblMoveSounds.length)];
+  }
+  // Restart sound if already playing
+  audio.currentTime = 0;
+  audio.play().catch(() => {});
 }
 
 
@@ -1640,6 +1661,12 @@ if (isTouchDevice()) {
   let tapTimeout = null;
   let lastTappedLabel = null;
 
+  // For tap/drag detection
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let touchMoved = false;
+  const TAP_MOVE_THRESHOLD = 10; // px
+
   // raycaster for detecting taps on face labels
   const raycaster = new THREE.Raycaster();
   const tapVector = new THREE.Vector2();
@@ -1661,37 +1688,71 @@ if (isTouchDevice()) {
   }
 
   function handleLabelTap(touch) {
+    // clear any previous tapTimeout to prevent stacking
+    if (tapTimeout) {
+      clearTimeout(tapTimeout);
+      tapTimeout = null;
+    }
     const ndc = getNDCFromTouch(touch);
-    const intersects = raycaster.intersectObjects(faceLabels, false);
-
     tapVector.set(ndc.x, ndc.y);
     raycaster.setFromCamera(tapVector, camera);
-    
+    const intersects = raycaster.intersectObjects(faceLabels, false);
+
     if (intersects.length > 0) {
       const labelMesh = intersects[0].object;
       const face = getFaceFromLabel(labelMesh);
       const now = Date.now();
 
       if (!face) return;
-      
-      if (lastTappedLabel === labelMesh && now - lastTapTime < 350) { // double-tap: counterclockwise
-        rotateFace(face, 'counterclockwise', 1, 0.3);
+
+      if (lastTappedLabel === labelMesh && now - lastTapTime < 200) { // double-tap: counterclockwise
+        rotateFace(face, 'counterclockwise', 1, 0.2);
         lastTappedLabel = null;
-        clearTimeout(tapTimeout);
+        lastTapTime = 0;
       } else { // single tap: clockwise (wait to see if double-tap)
         lastTappedLabel = labelMesh;
         lastTapTime = now;
         tapTimeout = setTimeout(() => {
           rotateFace(face, 'clockwise', 1, 0.3);
           lastTappedLabel = null;
-        }, 350);
+          tapTimeout = null;
+        }, 200);
       }
+    } else {
+      // If no intersection, reset tap state
+      lastTappedLabel = null;
+      lastTapTime = 0;
     }
   }
 
   renderer.domElement.addEventListener('touchstart', function(e) {
     if (e.touches.length === 1) {
-      handleLabelTap(e.touches[0]);
+      touchMoved = false;
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
     }
+  }, { passive: true });
+
+  renderer.domElement.addEventListener('touchmove', function(e) {
+    if (e.touches.length === 1) {
+      const dx = e.touches[0].clientX - touchStartX;
+      const dy = e.touches[0].clientY - touchStartY;
+      if (Math.sqrt(dx * dx + dy * dy) > TAP_MOVE_THRESHOLD) {
+        touchMoved = true;
+        // If the user drags, cancel any pending tapTimeout
+        if (tapTimeout) {
+          clearTimeout(tapTimeout);
+          tapTimeout = null;
+        }
+      }
+    }
+  }, { passive: true });
+
+  renderer.domElement.addEventListener('touchend', function(e) {
+    // Only treat as tap if movement was minimal
+    if (!touchMoved && e.changedTouches.length === 1) {
+      handleLabelTap(e.changedTouches[0]);
+    }
+    touchMoved = false;
   }, { passive: true });
 }
