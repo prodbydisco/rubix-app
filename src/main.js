@@ -1405,46 +1405,46 @@ window.addEventListener('keydown', (event) => {
 
   switch(event.key) {
     // face rotations
-    case 'f': rotateFace('front', 'clockwise', 1, 0.3); break;
-    case 'F': rotateFace('front', 'counterclockwise', 1, 0.3); break;
-    case 'b': rotateFace('back', 'clockwise', 1, 0.3); break;
-    case 'B': rotateFace('back', 'counterclockwise', 1, 0.3); break;
-    case 'u': rotateFace('up', 'clockwise', 1, 0.3); break;
-    case 'U': rotateFace('up', 'counterclockwise', 1, 0.3); break;
-    case 'd': rotateFace('down', 'clockwise', 1, 0.3); break;
-    case 'D': rotateFace('down', 'counterclockwise', 1, 0.3); break;
-    case 'l': rotateFace('left', 'clockwise', 1, 0.3); break;
-    case 'L': rotateFace('left', 'counterclockwise', 1, 0.3); break;
-    case 'r': rotateFace('right', 'clockwise', 1, 0.3); break;
-    case 'R': rotateFace('right', 'counterclockwise', 1, 0.3); break;
+    case 'f': rotateFace('front', 'clockwise', 1, 0.2); break;
+    case 'F': rotateFace('front', 'counterclockwise', 1, 0.2); break;
+    case 'b': rotateFace('back', 'clockwise', 1, 0.2); break;
+    case 'B': rotateFace('back', 'counterclockwise', 1, 0.2); break;
+    case 'u': rotateFace('up', 'clockwise', 1, 0.2); break;
+    case 'U': rotateFace('up', 'counterclockwise', 1, 0.2); break;
+    case 'd': rotateFace('down', 'clockwise', 1, 0.2); break;
+    case 'D': rotateFace('down', 'counterclockwise', 1, 0.2); break;
+    case 'l': rotateFace('left', 'clockwise', 1, 0.2); break;
+    case 'L': rotateFace('left', 'counterclockwise', 1, 0.2); break;
+    case 'r': rotateFace('right', 'clockwise', 1, 0.2); break;
+    case 'R': rotateFace('right', 'counterclockwise', 1, 0.2); break;
     
     // double face rotations (number keys)
-    case '1': executeMove('u', 0.3); break;  // up double layer
-    case '!': executeMove("u'", 0.3); break;
-    case '2': executeMove('d', 0.3); break;  // down double layer
-    case '@': executeMove("d'", 0.3); break;
-    case '3': executeMove('l', 0.3); break;  // left double layer
-    case '#': executeMove("l'", 0.3); break;
-    case '4': executeMove('r', 0.3); break;  // right double layer
-    case '$': executeMove("r'", 0.3); break;
-    case '5': executeMove('f', 0.3); break;  // front double layer
-    case '%': executeMove("f'", 0.3); break;
-    case '6': executeMove('b', 0.3); break;  // back double layer
-    case '^': executeMove("b'", 0.3); break;
+    case '1': executeMove('u', 0.2); break;  // up double layer
+    case '!': executeMove("u'", 0.2); break;
+    case '2': executeMove('d', 0.2); break;  // down double layer
+    case '@': executeMove("d'", 0.2); break;
+    case '3': executeMove('l', 0.2); break;  // left double layer
+    case '#': executeMove("l'", 0.2); break;
+    case '4': executeMove('r', 0.2); break;  // right double layer
+    case '$': executeMove("r'", 0.2); break;
+    case '5': executeMove('f', 0.2); break;  // front double layer
+    case '%': executeMove("f'", 0.2); break;
+    case '6': executeMove('b', 0.2); break;  // back double layer
+    case '^': executeMove("b'", 0.2); break;
     
     // middle layer rotations
-    case 'm': executeMove('M', 0.3); break;
-    case 'M': executeMove("M'", 0.3); break;
-    case 'e': executeMove('E', 0.3); break;
-    case 'E': executeMove("E'", 0.3); break;
-    case 's': executeMove('S', 0.3); break;
-    case 'S': executeMove("S'", 0.3); break;
+    case 'm': executeMove('M', 0.2); break;
+    case 'M': executeMove("M'", 0.2); break;
+    case 'e': executeMove('E', 0.2); break;
+    case 'E': executeMove("E'", 0.2); break;
+    case 's': executeMove('S', 0.2); break;
+    case 'S': executeMove("S'", 0.2); break;
     
     // entire cube rotations
-    case 'ArrowRight': rotateCube('y', 1, 0.35); break;
-    case 'ArrowLeft': rotateCube('-y', 1, 0.35); break;
-    case 'ArrowUp': rotateCube('-x', 1, 0.35); break;
-    case 'ArrowDown': rotateCube('x', 1, 0.35); break;
+    case 'ArrowRight': rotateCube('y', 1, 0.3); break;
+    case 'ArrowLeft': rotateCube('-y', 1, 0.3); break;
+    case 'ArrowUp': rotateCube('-x', 1, 0.3); break;
+    case 'ArrowDown': rotateCube('x', 1, 0.3); break;
     
     case 'h': toggleFaceLabels(); break; // toggle face labels
   }
@@ -1713,7 +1713,7 @@ if (isTouchDevice()) {
         lastTappedLabel = labelMesh;
         lastTapTime = now;
         tapTimeout = setTimeout(() => {
-          rotateFace(face, 'clockwise', 1, 0.3);
+          rotateFace(face, 'clockwise', 1, 0.2);
           lastTappedLabel = null;
           tapTimeout = null;
         }, 200);
