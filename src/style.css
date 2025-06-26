@@ -268,6 +268,7 @@ canvas {
   gap: 20px;
   flex-direction: column;
   width: 80vw;
+  max-width: 880px;
   height: max-content;
   max-height: 90dvh;
   overflow: scroll;
@@ -301,7 +302,7 @@ canvas {
   margin: 0 auto;
   display: flex;
   flex-wrap: nowrap;
-  gap: 30px;
+  gap: 20px;
   width: max-content;
   max-width: 100%;
   box-sizing: border-box;
