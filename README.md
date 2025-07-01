@@ -12,7 +12,7 @@ Info:
 - To setup the cube to the position where the algorithm should be used, click the 'Setup' button on its respective row
 - If an algorithm 'Setup' is executed, the 'SOLVE' button at the bottom of the application will be enabled, allowing you to automatically execute the algorithm at a slow speed
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////
 
 How to play:
 
