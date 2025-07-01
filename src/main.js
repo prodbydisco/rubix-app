@@ -1403,6 +1403,54 @@ dropdownContent.appendChild(dropdownFooter);
 window.addEventListener('keydown', (event) => {
   if (event.key !== 'F12') {event.preventDefault()};
 
+  // double face rotations with CTRL (and SHIFT for reverse)
+  if (event.ctrlKey) {
+    switch(event.key.toLowerCase()) {
+      case 'u':
+        if (event.shiftKey) {
+          executeMove("u'", 0.2);
+        } else {
+          executeMove('u', 0.2);
+        }
+        return;
+      case 'd':
+        if (event.shiftKey) {
+          executeMove("d'", 0.2);
+        } else {
+          executeMove('d', 0.2);
+        }
+        return;
+      case 'l':
+        if (event.shiftKey) {
+          executeMove("l'", 0.2);
+        } else {
+          executeMove('l', 0.2);
+        }
+        return;
+      case 'r':
+        if (event.shiftKey) {
+          executeMove("r'", 0.2);
+        } else {
+          executeMove('r', 0.2);
+        }
+        return;
+      case 'f':
+        if (event.shiftKey) {
+          executeMove("f'", 0.2);
+        } else {
+          executeMove('f', 0.2);
+        }
+        return;
+      case 'b':
+        if (event.shiftKey) {
+          executeMove("b'", 0.2);
+        } else {
+          executeMove('b', 0.2);
+        }
+        return;
+    }
+  }
+
   switch(event.key) {
     // face rotations
     case 'f': rotateFace('front', 'clockwise', 1, 0.2); break;
@@ -1417,20 +1465,6 @@ window.addEventListener('keydown', (event) => {
     case 'L': rotateFace('left', 'counterclockwise', 1, 0.2); break;
     case 'r': rotateFace('right', 'clockwise', 1, 0.2); break;
     case 'R': rotateFace('right', 'counterclockwise', 1, 0.2); break;
-    
-    // double face rotations (number keys)
-    case '1': executeMove('u', 0.2); break;  // up double layer
-    case '!': executeMove("u'", 0.2); break;
-    case '2': executeMove('d', 0.2); break;  // down double layer
-    case '@': executeMove("d'", 0.2); break;
-    case '3': executeMove('l', 0.2); break;  // left double layer
-    case '#': executeMove("l'", 0.2); break;
-    case '4': executeMove('r', 0.2); break;  // right double layer
-    case '$': executeMove("r'", 0.2); break;
-    case '5': executeMove('f', 0.2); break;  // front double layer
-    case '%': executeMove("f'", 0.2); break;
-    case '6': executeMove('b', 0.2); break;  // back double layer
-    case '^': executeMove("b'", 0.2); break;
     
     // middle layer rotations
     case 'm': executeMove('M', 0.2); break;
