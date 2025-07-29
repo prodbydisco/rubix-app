@@ -555,10 +555,6 @@ const algortihms = {
 const scene = new THREE.Scene(); // create scene
 scene.background = new THREE.Color(0x000000); // set scene background
 
-// // Add axis helper to visualize world coordinates
-// const axesHelper = new THREE.AxesHelper(5);
-// scene.add(axesHelper);
-
 const camera = new THREE.PerspectiveCamera(50, window.innerWidth/window.innerHeight, 0.1, 1000); // create camera
 camera.position.set(5, 5, 5); // set cam position
 
@@ -575,7 +571,7 @@ const ambientLight = new THREE.AmbientLight(0xffffff, 3);
 scene.add(ambientLight);
 
 // add key light (main light)
-const keyLight = new THREE.DirectionalLight(0xffffff, 1.0);
+const keyLight = new THREE.DirectionalLight(0xffffff, 0.7);
 keyLight.position.set(5, 5, 5);
 keyLight.castShadow = true;
 scene.add(keyLight);
@@ -603,27 +599,21 @@ keyLight.shadow.camera.far = 500;
 
 // load and configure the cube
 const loader = new GLTFLoader();
-loader.load('/models/rubiks_cube.glb', gltf => {
+loader.load('/models/cube.glb', gltf => {
   root = gltf.scene;
-  cube = root.getObjectByName('Cube');
+  cube = root.getObjectByName('cube');
 
   root.scale.set(2, 2, 2);
-  
-  // set initial cube state for preferred colours
-  cube.rotation.x = -Math.PI / 2;
-  cube.rotation.z = -Math.PI / 2;
 
   scene.add(cubePivot); // add cube axis
   cubePivot.position.set(0,0,0); // set to center
   
   // collect all cubelets
   const addCubes = (object) => {
-    object.children.forEach(collection => {
-      collection.children.forEach(child => {
-        if (child.name !== 'square') {
-          cubelets.push(child);
-        }
-      });
+    object.children.forEach(child => {
+      if (child.name !== 'black_square') {
+        cubelets.push(child);
+      }
     });
     cubelets.sort();
   };
@@ -1182,9 +1172,9 @@ async function resetCube() {
   
   // reload the cube model
   return new Promise((resolve) => {
-    loader.load('/models/rubiks_cube.glb', gltf => {
+    loader.load('/models/cube.glb', gltf => {
       root = gltf.scene;
-      cube = root.getObjectByName('Cube');
+      cube = root.getObjectByName('cube');
 
       // instead of clearing the entire scene, just remove the cube-related objects
       scene.children.forEach(child => {
@@ -1197,20 +1187,15 @@ async function resetCube() {
         }
       });
 
-      // set initial cube state for preferred colours
-      cube.rotation.x = -Math.PI / 2;
-      cube.rotation.z = -Math.PI / 2;
-
       scene.add(cubePivot);
       cubePivot.position.set(0, 0, 0);
       
+      // collect all cubelets
       const addCubes = (object) => {
-        object.children.forEach(collection => {
-          collection.children.forEach(child => {
-            if (child.name !== 'square') {
-              cubelets.push(child);
-            }
-          });
+        object.children.forEach(child => {
+          if (child.name !== 'black_square') {
+            cubelets.push(child);
+          }
         });
         cubelets.sort();
       };
@@ -1623,7 +1608,7 @@ const dblMoveSounds = [
   new Audio('/sounds/double2.mp3'),
   new Audio('/sounds/double3.mp3')
 ];
-// Set volume and preload
+// set volume and preload
 [...moveSounds, ...dblMoveSounds].forEach(audio => {
   audio.volume = 0.05;
   audio.load();
@@ -1637,7 +1622,7 @@ function playSound(multiplier) {
   } else {
     audio = dblMoveSounds[Math.floor(Math.random() * dblMoveSounds.length)];
   }
-  // Restart sound if already playing
+  // restart sound if already playing
   audio.currentTime = 0;
   audio.play().catch(() => {});
 }
@@ -1695,7 +1680,7 @@ if (isTouchDevice()) {
   let tapTimeout = null;
   let lastTappedLabel = null;
 
-  // For tap/drag detection
+  // for tap/drag detection
   let touchStartX = 0;
   let touchStartY = 0;
   let touchMoved = false;
@@ -1753,7 +1738,7 @@ if (isTouchDevice()) {
         }, 200);
       }
     } else {
-      // If no intersection, reset tap state
+      // if no intersection, reset tap state
       lastTappedLabel = null;
       lastTapTime = 0;
     }
@@ -1773,7 +1758,7 @@ if (isTouchDevice()) {
       const dy = e.touches[0].clientY - touchStartY;
       if (Math.sqrt(dx * dx + dy * dy) > TAP_MOVE_THRESHOLD) {
         touchMoved = true;
-        // If the user drags, cancel any pending tapTimeout
+        // if the user drags, cancel any pending tapTimeout
         if (tapTimeout) {
           clearTimeout(tapTimeout);
           tapTimeout = null;
@@ -1783,7 +1768,7 @@ if (isTouchDevice()) {
   }, { passive: true });
 
   renderer.domElement.addEventListener('touchend', function(e) {
-    // Only treat as tap if movement was minimal
+    // only treat as tap if movement was minimal
     if (!touchMoved && e.changedTouches.length === 1) {
       handleLabelTap(e.changedTouches[0]);
     }
