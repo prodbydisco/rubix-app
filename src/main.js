@@ -547,7 +547,7 @@ const algortihms = {
     },
     'Z': {
       icon: '/images/pll/advanced/Z.png',
-      algorithm: "M' U M2 U M2 U M' U2 M2M' U M2 U M2 U M' U2 M2"
+      algorithm: "M' U M2 U M2 U M' U2 M2 M' U M2 U M2 U M' U2 M2"
     },
   },
 };
