@@ -571,18 +571,18 @@ const ambientLight = new THREE.AmbientLight(0xffffff, 2.5);
 scene.add(ambientLight);
 
 // add key light (main light)
-const keyLight = new THREE.DirectionalLight(0xffffff, 0.7);
+const keyLight = new THREE.DirectionalLight(0xffffff, 0.5);
 keyLight.position.set(5, 5, 5);
 keyLight.castShadow = true;
 scene.add(keyLight);
 
 // add fill light (softer light from opposite side)
-const fillLight = new THREE.DirectionalLight(0xffffff, 0.7);
+const fillLight = new THREE.DirectionalLight(0xffffff, 0.5);
 fillLight.position.set(-5, 0, -5);
 scene.add(fillLight);
 
 // add rim light (back light for edge definition)
-const rimLight = new THREE.DirectionalLight(0xffffff, 0.3);
+const rimLight = new THREE.DirectionalLight(0xffffff, 0.2);
 rimLight.position.set(0, -5, -5);
 scene.add(rimLight);
 
