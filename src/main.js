@@ -567,7 +567,7 @@ controls.enableDamping = true; // enables smooth cam movements
 
 
 // add ambient light for base illumination
-const ambientLight = new THREE.AmbientLight(0xffffff, 3);
+const ambientLight = new THREE.AmbientLight(0xffffff, 2.5);
 scene.add(ambientLight);
 
 // add key light (main light)
